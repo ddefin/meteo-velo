@@ -7,272 +7,243 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d1117;
-    --card: #161b22;
-    --card2: #1c2330;
+    --card: #161b22; --card2: #1c2330;
     --border: rgba(255,255,255,0.06);
-    --blue: #4fc3f7;
-    --green: #66bb6a;
-    --orange: #ffa726;
-    --red: #ef5350;
-    --text: #e6edf3;
-    --muted: #7d8590;
+    --blue: #4fc3f7; --green: #66bb6a; --orange: #ffa726; --red: #ef5350;
+    --text: #e6edf3; --muted: #7d8590;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: transparent; font-family: 'Barlow', sans-serif; color: var(--text); }
   body { padding: 10px; }
-
   .widget { width: 100%; max-width: 480px; margin: auto; animation: fadeIn 0.6s ease; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
-  .header { background: var(--card); border: 1px solid var(--border); border-radius: 16px 16px 0 0; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: none; }
-  .location { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-  .location span { color: var(--blue); }
-  .score-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; background: rgba(102,187,106,0.15); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
-  .score-badge.warn { background: rgba(255,167,38,0.15); color: var(--orange); border-color: rgba(255,167,38,0.3); }
-  .score-badge.bad  { background: rgba(239,83,80,0.15); color: var(--red); border-color: rgba(239,83,80,0.3); }
+  /* HEADER */
+  .header { background:var(--card); border:1px solid var(--border); border-radius:16px 16px 0 0; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:none; }
+  .location { font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+  .location span { color:var(--blue); }
+  .score-badge { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:5px 12px; border-radius:20px; background:rgba(102,187,106,0.15); color:var(--green); border:1px solid rgba(102,187,106,0.3); }
+  .score-badge.warn { background:rgba(255,167,38,0.15); color:var(--orange); border-color:rgba(255,167,38,0.3); }
+  .score-badge.bad  { background:rgba(239,83,80,0.15);  color:var(--red);    border-color:rgba(239,83,80,0.3); }
 
-  .main-block { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 8px 20px 16px; display: flex; align-items: flex-end; gap: 20px; }
-  .temp-now { font-family: 'Barlow Condensed', sans-serif; font-size: 5rem; font-weight: 800; line-height: 1; }
-  .temp-now sup { font-size: 2rem; font-weight: 400; opacity: 0.6; vertical-align: super; }
-  .temp-details { padding-bottom: 6px; }
-  .temp-feels { font-size: 0.85rem; color: var(--muted); }
-  .temp-feels strong { color: var(--text); }
-  .weather-desc { font-size: 0.9rem; margin-top: 4px; color: var(--blue); font-weight: 500; text-transform: capitalize; }
+  /* TEMP */
+  .main-block { background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); padding:8px 20px 16px; display:flex; align-items:flex-end; gap:20px; }
+  .temp-now { font-family:'Barlow Condensed',sans-serif; font-size:5rem; font-weight:800; line-height:1; }
+  .temp-now sup { font-size:2rem; font-weight:400; opacity:0.6; vertical-align:super; }
+  .temp-feels { font-size:0.85rem; color:var(--muted); padding-bottom:6px; }
+  .temp-feels strong { color:var(--text); }
+  .weather-desc { font-size:0.9rem; color:var(--blue); font-weight:500; text-transform:capitalize; margin-top:4px; }
 
-  .stats { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; line-height: 1; }
-  .stat-unit { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 3px; }
-  .wind-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
-  .arrow-wrap { width: 36px; height: 36px; border-radius: 50%; background: rgba(79,195,247,0.1); border: 1px solid rgba(79,195,247,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .arrow-icon { font-size: 1.2rem; color: var(--blue); display: inline-block; }
-  .wind-dir-label { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  /* STATS */
+  .stats { background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); padding:0 12px 12px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .stat-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+  .stat-label { font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .stat-value { font-family:'Barlow Condensed',sans-serif; font-size:1.8rem; font-weight:700; line-height:1; }
+  .stat-unit { font-size:0.8rem; font-weight:400; color:var(--muted); margin-left:3px; }
+  .wind-row { display:flex; align-items:center; gap:10px; margin-top:2px; }
+  .arrow-wrap { width:36px; height:36px; border-radius:50%; background:rgba(79,195,247,0.1); border:1px solid rgba(79,195,247,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .arrow-icon { font-size:1.2rem; color:var(--blue); display:inline-block; }
+  .wind-sub { font-size:0.72rem; color:var(--muted); margin-top:3px; }
 
-  .section-header { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 10px 20px 8px; border-top: 1px solid var(--border); }
-  .section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  /* SECTION HEADER */
+  .section-header { background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); border-top:1px solid var(--border); padding:10px 20px 8px; }
+  .section-title { font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
 
-  .hourly-scroll { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-  .hourly-track { display: flex; gap: 8px; min-width: max-content; }
-  .hour-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; text-align: center; min-width: 68px; }
-  .hour-card.now { border-color: rgba(79,195,247,0.5); background: rgba(79,195,247,0.06); }
-  .hour-time { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
-  .hour-card.now .hour-time { color: var(--blue); }
-  .hour-temp { font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1; }
-  .hour-wind { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
-  .hour-wind span { color: var(--blue); font-weight: 600; }
-  .hour-rain { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
-  .hour-rain.has-rain { color: #64b5f6; }
+  /* HORAIRE */
+  .hourly-scroll { background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); padding:0 12px 12px; overflow-x:auto; scrollbar-width:thin; }
+  .hourly-track { display:flex; gap:8px; min-width:max-content; }
+  .hour-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:10px 12px; text-align:center; min-width:68px; }
+  .hour-card.now { border-color:rgba(79,195,247,0.5); background:rgba(79,195,247,0.06); }
+  .hour-time { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:600; color:var(--muted); margin-bottom:6px; }
+  .hour-card.now .hour-time { color:var(--blue); }
+  .hour-temp { font-family:'Barlow Condensed',sans-serif; font-size:1.25rem; font-weight:700; line-height:1; }
+  .hour-wind { font-size:0.7rem; color:var(--muted); margin-top:4px; }
+  .hour-wind span { color:var(--blue); font-weight:600; }
+  .hour-rain { font-size:0.7rem; color:var(--muted); margin-top:3px; }
+  .hour-rain.wet { color:#64b5f6; }
 
-  .daily-block { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .day-row { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
-  .day-left {}
-  .day-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-  .day-desc { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
-  .day-temps { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; color: var(--muted); white-space: nowrap; text-align: right; }
-  .day-temps strong { color: var(--text); font-size: 1rem; }
-  .day-wind { font-size: 0.72rem; color: var(--muted); text-align: center; white-space: nowrap; }
-  .day-wind b { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--blue); }
-  .day-rain { font-size: 0.72rem; color: var(--muted); text-align: center; white-space: nowrap; }
-  .day-rain b { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700; }
-  .day-rain.has-rain b { color: #64b5f6; }
-  .day-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .day-dot.good { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .day-dot.warn { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
-  .day-dot.bad  { background: var(--red);    box-shadow: 0 0 6px var(--red); }
+  /* 5 JOURS */
+  .daily-block { background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); padding:0 12px 12px; display:flex; flex-direction:column; gap:6px; }
+  .day-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:10px 14px; }
+  .day-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .day-title { display:flex; align-items:center; gap:8px; }
+  .day-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .day-dot.good { background:var(--green); box-shadow:0 0 5px var(--green); }
+  .day-dot.warn { background:var(--orange); box-shadow:0 0 5px var(--orange); }
+  .day-dot.bad  { background:var(--red);    box-shadow:0 0 5px var(--red); }
+  .day-name { font-family:'Barlow Condensed',sans-serif; font-size:0.95rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+  .day-minmax { font-family:'Barlow Condensed',sans-serif; font-size:0.9rem; color:var(--muted); }
+  .day-minmax strong { color:var(--text); font-size:1rem; }
+  .day-bottom { display:flex; justify-content:space-between; align-items:center; }
+  .day-desc { font-size:0.72rem; color:var(--muted); }
+  .day-right { display:flex; gap:14px; align-items:center; }
+  .day-wind-val { font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; color:var(--blue); font-weight:700; }
+  .day-wind-dir { font-size:0.7rem; color:var(--muted); }
+  .day-rain-val { font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; font-weight:700; color:var(--muted); }
+  .day-rain-val.wet { color:#64b5f6; }
 
-  .footer { background: var(--card); border: 1px solid var(--border); border-radius: 0 0 16px 16px; border-top: none; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .update-time { font-size: 0.7rem; color: var(--muted); }
-  .advice { font-size: 0.75rem; font-weight: 500; color: var(--green); }
-  .advice.warn { color: var(--orange); }
-  .advice.bad  { color: var(--red); }
+  /* FOOTER */
+  .footer { background:var(--card); border:1px solid var(--border); border-radius:0 0 16px 16px; border-top:none; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .update-time { font-size:0.7rem; color:var(--muted); }
+  .advice { font-size:0.75rem; font-weight:500; color:var(--green); }
+  .advice.warn { color:var(--orange); }
+  .advice.bad  { color:var(--red); }
 
-  .loading-state { text-align: center; padding: 40px; font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 0.1em; color: var(--muted); background: var(--card); border-radius: 16px; border: 1px solid var(--border); }
+  .loading-state { text-align:center; padding:40px; font-family:'Barlow Condensed',sans-serif; font-size:1rem; letter-spacing:0.1em; color:var(--muted); background:var(--card); border-radius:16px; border:1px solid var(--border); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .loading-dot { animation: pulse 1.4s infinite; }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  .loading-dot { animation:pulse 1.4s infinite; }
+  .loading-dot:nth-child(2) { animation-delay:0.2s; }
+  .loading-dot:nth-child(3) { animation-delay:0.4s; }
 </style>
 </head>
 <body>
-
 <div class="widget" id="widget-meteo">
   <div class="loading-state">
     <span class="loading-dot">●</span> <span class="loading-dot">●</span> <span class="loading-dot">●</span>
-    <div style="margin-top:10px; font-size:0.8rem;">Chargement météo...</div>
+    <div style="margin-top:10px;font-size:0.8rem;">Chargement météo...</div>
   </div>
 </div>
-
 <script>
-(function() {
-  var LAT  = 48.8561;
-  var LON  = 2.8931;
-  var CITY = "Magny-le-Hongre";
-  var DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
-  var JOURS = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
+(function(){
+  var LAT=48.8561, LON=2.8931, CITY="Magny-le-Hongre";
+  var DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
+  var JOURS=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
 
-  function dir(deg) { return DIRS[Math.round(deg / 22.5) % 16]; }
+  function dir(d){ return DIRS[Math.round(d/22.5)%16]; }
 
-  function getScore(temp, wind, rain, feels) {
-    var s = 100;
-    if (temp < 5) s -= 30; else if (temp < 10) s -= 15; else if (temp > 35) s -= 20;
-    if (wind > 50) s -= 35; else if (wind > 30) s -= 20; else if (wind > 20) s -= 10;
-    if (rain > 5) s -= 40; else if (rain > 2) s -= 25; else if (rain > 0) s -= 10;
-    if (feels < 3) s -= 15;
-    if (s >= 75) return "good";
-    if (s >= 45) return "warn";
-    return "bad";
+  function getScore(temp,wind,rain,feels){
+    var s=100;
+    if(temp<5)s-=30; else if(temp<10)s-=15; else if(temp>35)s-=20;
+    if(wind>50)s-=35; else if(wind>30)s-=20; else if(wind>20)s-=10;
+    if(rain>5)s-=40; else if(rain>2)s-=25; else if(rain>0)s-=10;
+    if(feels<3)s-=15;
+    return s>=75?"good":s>=45?"warn":"bad";
   }
 
-  function scoreLabel(cls) {
-    if (cls === "good") return "✓ Idéal pour rouler";
-    if (cls === "warn") return "⚠ Conditions correctes";
-    return "✗ Déconseillé";
+  function scoreTxt(c){ return c==="good"?"✓ Idéal pour rouler":c==="warn"?"⚠ Conditions correctes":"✗ Déconseillé"; }
+
+  function wdesc(code){
+    var m={0:"Ciel dégagé",1:"Peu nuageux",2:"Partiellement nuageux",3:"Couvert",
+      45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine modérée",55:"Bruine dense",
+      61:"Pluie légère",63:"Pluie modérée",65:"Forte pluie",71:"Neige légère",73:"Neige modérée",75:"Forte neige",
+      80:"Averses légères",81:"Averses",82:"Fortes averses",95:"Orage",96:"Orage avec grêle",99:"Orage violent"};
+    return m[code]||"Variable";
   }
 
-  function desc(code) {
-    var m = {0:"Ciel dégagé",1:"Peu nuageux",2:"Partiellement nuageux",3:"Couvert",
-      45:"Brouillard",48:"Brouillard givrant",
-      51:"Bruine légère",53:"Bruine modérée",55:"Bruine dense",
-      61:"Pluie légère",63:"Pluie modérée",65:"Forte pluie",
-      71:"Neige légère",73:"Neige modérée",75:"Forte neige",
-      80:"Averses légères",81:"Averses",82:"Fortes averses",
-      95:"Orage",96:"Orage avec grêle",99:"Orage violent"};
-    return m[code] || "Variable";
-  }
+  function fmtH(iso){ return new Date(iso).getHours().toString().padStart(2,'0')+"h"; }
 
-  function fmtH(iso) { return new Date(iso).getHours().toString().padStart(2,'0') + "h"; }
-
-  function load() {
-    var url = "https://api.open-meteo.com/v1/forecast"
-      + "?latitude=" + LAT + "&longitude=" + LON
-      + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weathercode"
-      + "&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m"
-      + "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,weathercode"
-      + "&wind_speed_unit=kmh&timezone=Europe%2FParis&forecast_days=7";
-
-    fetch(url).then(function(r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    }).then(function(d) {
+  function load(){
+    fetch("https://api.open-meteo.com/v1/forecast"
+      +"?latitude="+LAT+"&longitude="+LON
+      +"&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weathercode"
+      +"&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m"
+      +"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,weathercode"
+      +"&wind_speed_unit=kmh&timezone=Europe%2FParis&forecast_days=7"
+    ).then(function(r){ if(!r.ok)throw new Error("HTTP "+r.status); return r.json(); })
+    .then(function(d){
 
       /* CURRENT */
-      var c     = d.current;
-      var temp  = Math.round(c.temperature_2m);
-      var feels = Math.round(c.apparent_temperature);
-      var wind  = Math.round(c.wind_speed_10m);
-      var wdeg  = c.wind_direction_10m || 0;
-      var rain  = c.precipitation || 0;
-      var sc    = getScore(temp, wind, rain, feels);
-
-      /* Flèche pointe D'OÙ VIENT le vent : +180° */
-      var arrowDeg  = wdeg + 180;
-      var rainColor = rain > 0 ? '#64b5f6' : 'var(--text)';
-      var rainTxt   = rain === 0 ? 'Pas de pluie' : rain < 1 ? 'Bruine légère' : rain < 3 ? 'Pluie modérée' : 'Forte pluie';
-      var adviceTxt = sc === 'good' ? '🚴 Route & VTT OK' : sc === 'warn' ? '⚡ Équipez-vous bien' : '🏠 Restez au chaud';
-      var timeStr   = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+      var c=d.current;
+      var temp=Math.round(c.temperature_2m);
+      var feels=Math.round(c.apparent_temperature);
+      var wind=Math.round(c.wind_speed_10m);
+      var wdeg=c.wind_direction_10m||0;
+      var rain=c.precipitation||0;
+      var sc=getScore(temp,wind,rain,feels);
+      var rainTxt=rain===0?"Pas de pluie":rain<1?"Bruine légère":rain<3?"Pluie modérée":"Forte pluie";
+      var advTxt=sc==="good"?"🚴 Route & VTT OK":sc==="warn"?"⚡ Équipez-vous bien":"🏠 Restez au chaud";
+      var timeStr=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 
       /* HORAIRE 12h */
-      var now   = new Date();
-      var times = d.hourly.time;
-      var si    = 0;
-      for (var i = 0; i < times.length; i++) { if (new Date(times[i]) >= now) { si = i; break; } }
-
-      var hhtml = "";
-      for (var i = si; i < si + 12 && i < times.length; i++) {
-        var isNow = i === si;
-        var ht = Math.round(d.hourly.temperature_2m[i]);
-        var hw = Math.round(d.hourly.wind_speed_10m[i]);
-        var hr = d.hourly.precipitation[i] || 0;
-        var hd = dir(d.hourly.wind_direction_10m[i] || 0);
-        hhtml += '<div class="hour-card' + (isNow ? ' now' : '') + '">'
-          + '<div class="hour-time">' + (isNow ? 'Maint.' : fmtH(times[i])) + '</div>'
-          + '<div class="hour-temp">' + ht + '°</div>'
-          + '<div class="hour-wind"><span>' + hw + '</span> km/h ' + hd + '</div>'
-          + '<div class="hour-rain' + (hr > 0 ? ' has-rain' : '') + '">' + (hr > 0 ? '🌧 ' + hr.toFixed(1) : '— mm') + '</div>'
-          + '</div>';
+      var now=new Date(), times=d.hourly.time, si=0;
+      for(var i=0;i<times.length;i++){ if(new Date(times[i])>=now){si=i;break;} }
+      var hhtml="";
+      for(var i=si;i<si+12&&i<times.length;i++){
+        var isN=i===si;
+        var ht=Math.round(d.hourly.temperature_2m[i]);
+        var hw=Math.round(d.hourly.wind_speed_10m[i]);
+        var hr=d.hourly.precipitation[i]||0;
+        var hd=dir(d.hourly.wind_direction_10m[i]||0);
+        hhtml+='<div class="hour-card'+(isN?" now":"")+'"><div class="hour-time">'+(isN?"Maint.":fmtH(times[i]))+'</div>'
+          +'<div class="hour-temp">'+ht+'°</div>'
+          +'<div class="hour-wind"><span>'+hw+'</span> km/h '+hd+'</div>'
+          +'<div class="hour-rain'+(hr>0?" wet":"")+'">'+( hr>0?"🌧 "+hr.toFixed(1):"— mm")+'</div></div>';
       }
 
-      /* 5 JOURS (index 1 à 5, on saute aujourd'hui = 0) */
-      var dhtml = "";
-      var dd = d.daily;
-      for (var i = 1; i <= 6; i++) {
-        if (!dd.time[i]) continue;
-        var parts = dd.time[i].split('-'); var date = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-        var dname = JOURS[date.getDay()] + ' ' + date.getDate() + '/' + (date.getMonth()+1);
-        var dmax  = Math.round(dd.temperature_2m_max[i]);
-        var dmin  = Math.round(dd.temperature_2m_min[i]);
-        var dwind = Math.round(dd.wind_speed_10m_max[i]);
-        var ddir  = dir(dd.wind_direction_10m_dominant[i] || 0);
-        var drain = dd.precipitation_sum[i] || 0;
-        var dcode = dd.weathercode[i] || 0;
-        var dsc   = getScore(dmax, dwind, drain, dmin);
-        dhtml += '<div class="day-row">'
-          + '<div class="day-left">'
-            + '<div class="day-name">' + dname + '</div>'
-            + '<div class="day-desc">' + desc(dcode) + '</div>'
-          + '</div>'
-          + '<div class="day-temps"><strong>' + dmax + '°</strong> / ' + dmin + '°</div>'
-          + '<div class="day-wind"><b>' + dwind + ' km/h</b>' + ddir + '</div>'
-          + '<div class="day-rain' + (drain > 0 ? ' has-rain' : '') + '"><b>' + (drain > 0 ? drain.toFixed(1) + ' mm' : '0 mm') + '</b>' + (drain > 0 ? '🌧' : '☀') + '</div>'
-          + '<div class="day-dot ' + dsc + '"></div>'
-          + '</div>';
+      /* 5 JOURS */
+      var dd2=d.daily, dhtml="";
+      for(var i=1;i<=5;i++){
+        if(!dd2.time[i]) continue;
+        var p=dd2.time[i].split("-");
+        var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+        var dname=JOURS[dt.getDay()]+" "+dt.getDate()+"/"+(dt.getMonth()+1);
+        var dmax=Math.round(dd2.temperature_2m_max[i]);
+        var dmin=Math.round(dd2.temperature_2m_min[i]);
+        var dw=Math.round(dd2.wind_speed_10m_max[i]);
+        var dd3=dir(dd2.wind_direction_10m_dominant[i]||0);
+        var dr=(dd2.precipitation_sum[i]||0);
+        var dc=dd2.weathercode[i]||0;
+        var dsc=getScore(dmax,dw,dr,dmin);
+        dhtml+='<div class="day-card">'
+          +'<div class="day-top">'
+            +'<div class="day-title">'
+              +'<div class="day-dot '+dsc+'"></div>'
+              +'<div class="day-name">'+dname+'</div>'
+            +'</div>'
+            +'<div class="day-minmax"><strong>'+dmax+'°</strong> / '+dmin+'°</div>'
+          +'</div>'
+          +'<div class="day-bottom">'
+            +'<div class="day-desc">'+wdesc(dc)+'</div>'
+            +'<div class="day-right">'
+              +'<div><div class="day-wind-val">'+dw+' km/h</div><div class="day-wind-dir">'+dd3+'</div></div>'
+              +'<div><div class="day-rain-val'+(dr>0?" wet":"")+'">'+( dr>0?dr.toFixed(1)+" mm":"0 mm")+'</div><div class="day-wind-dir">'+(dr>0?"🌧":"☀")+'</div></div>'
+            +'</div>'
+          +'</div>'
+        +'</div>';
       }
 
-      /* RENDU FINAL */
-      document.getElementById('widget-meteo').innerHTML =
+      /* RENDU */
+      document.getElementById("widget-meteo").innerHTML=
         '<div class="header">'
-          + '<div class="location">📍 <span>' + CITY + '</span> · Seine-et-Marne</div>'
-          + '<div class="score-badge ' + sc + '">' + scoreLabel(sc) + '</div>'
-        + '</div>'
+          +'<div class="location">📍 <span>'+CITY+'</span> · Seine-et-Marne</div>'
+          +'<div class="score-badge '+sc+'">'+scoreTxt(sc)+'</div>'
+        +'</div>'
+        +'<div class="main-block">'
+          +'<div class="temp-now">'+temp+'<sup>°C</sup></div>'
+          +'<div><div class="temp-feels">Ressenti <strong>'+feels+'°C</strong></div>'
+          +'<div class="weather-desc">'+wdesc(c.weathercode||0)+'</div></div>'
+        +'</div>'
+        +'<div class="stats">'
+          +'<div class="stat-card"><div class="stat-label">Vent · vient du</div>'
+            +'<div class="wind-row">'
+              +'<div class="arrow-wrap"><span class="arrow-icon" style="display:inline-block;transform:rotate('+(wdeg+180)+'deg)">↑</span></div>'
+              +'<div><div class="stat-value">'+wind+'<span class="stat-unit">km/h</span></div>'
+              +'<div class="wind-sub">'+dir(wdeg)+'</div></div>'
+            +'</div>'
+          +'</div>'
+          +'<div class="stat-card"><div class="stat-label">Pluie (1h)</div>'
+            +'<div class="stat-value" style="color:'+(rain>0?"#64b5f6":"var(--text)")+'">'+rain.toFixed(1)+'<span class="stat-unit">mm</span></div>'
+            +'<div style="font-size:0.72rem;color:var(--muted);margin-top:4px">'+rainTxt+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="section-header"><div class="section-title">⏱ Prévisions · 12 prochaines heures</div></div>'
+        +'<div class="hourly-scroll"><div class="hourly-track">'+hhtml+'</div></div>'
+        +'<div class="section-header"><div class="section-title">📅 Prévisions · 5 prochains jours</div></div>'
+        +'<div class="daily-block">'+dhtml+'</div>'
+        +'<div class="footer">'
+          +'<div class="update-time">Mise à jour : '+timeStr+'</div>'
+          +'<div class="advice '+sc+'">'+advTxt+'</div>'
+        +'</div>';
 
-        + '<div class="main-block">'
-          + '<div class="temp-now">' + temp + '<sup>°C</sup></div>'
-          + '<div class="temp-details">'
-            + '<div class="temp-feels">Ressenti <strong>' + feels + '°C</strong></div>'
-            + '<div class="weather-desc">' + desc(c.weathercode || 0) + '</div>'
-          + '</div>'
-        + '</div>'
-
-        + '<div class="stats">'
-          + '<div class="stat-card">'
-            + '<div class="stat-label">Vent · vient du</div>'
-            + '<div class="wind-row">'
-              + '<div class="arrow-wrap"><span class="arrow-icon" style="display:inline-block;transform:rotate(' + arrowDeg + 'deg)">↑</span></div>'
-              + '<div>'
-                + '<div class="stat-value">' + wind + '<span class="stat-unit">km/h</span></div>'
-                + '<div class="wind-dir-label">vient du ' + dir(wdeg) + '</div>'
-              + '</div>'
-            + '</div>'
-          + '</div>'
-          + '<div class="stat-card">'
-            + '<div class="stat-label">Pluie (1h)</div>'
-            + '<div class="stat-value" style="color:' + rainColor + '">' + rain.toFixed(1) + '<span class="stat-unit">mm</span></div>'
-            + '<div style="font-size:0.72rem;color:var(--muted);margin-top:4px">' + rainTxt + '</div>'
-          + '</div>'
-        + '</div>'
-
-        + '<div class="section-header"><div class="section-title">⏱ Prévisions · 12 prochaines heures</div></div>'
-        + '<div class="hourly-scroll"><div class="hourly-track">' + hhtml + '</div></div>'
-
-        + '<div class="section-header"><div class="section-title">📅 Prévisions · 5 prochains jours</div></div>'
-        + '<div class="daily-block">' + dhtml + '</div>'
-
-        + '<div class="footer">'
-          + '<div class="update-time">Mise à jour : ' + timeStr + '</div>'
-          + '<div class="advice ' + sc + '">' + adviceTxt + '</div>'
-        + '</div>';
-
-    }).catch(function(e) {
-      document.getElementById('widget-meteo').innerHTML =
+    }).catch(function(e){
+      document.getElementById("widget-meteo").innerHTML=
         '<div class="loading-state"><div style="color:#ef5350">Erreur de chargement</div>'
-        + '<div style="font-size:0.75rem;margin-top:8px;color:var(--muted)">' + e.message + '</div></div>';
+        +'<div style="font-size:0.75rem;margin-top:8px;color:var(--muted)">'+e.message+'</div></div>';
     });
   }
 
   load();
-  setInterval(load, 600000);
+  setInterval(load,600000);
 })();
 </script>
 </body>
