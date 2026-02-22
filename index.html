@@ -166,8 +166,8 @@
       var rain  = c.precipitation || 0;
       var sc    = getScore(temp, wind, rain, feels);
 
-      /* Flèche pointe VERS OÙ SOUFFLE le vent = wdeg sans modification */
-      var arrowDeg  = wdeg;
+      /* Flèche pointe D'OÙ VIENT le vent : +180° */
+      var arrowDeg  = wdeg + 180;
       var rainColor = rain > 0 ? '#64b5f6' : 'var(--text)';
       var rainTxt   = rain === 0 ? 'Pas de pluie' : rain < 1 ? 'Bruine légère' : rain < 3 ? 'Pluie modérée' : 'Forte pluie';
       var adviceTxt = sc === 'good' ? '🚴 Route & VTT OK' : sc === 'warn' ? '⚡ Équipez-vous bien' : '🏠 Restez au chaud';
@@ -199,7 +199,7 @@
       var dd = d.daily;
       for (var i = 1; i <= 5; i++) {
         if (!dd.time[i]) continue;
-        var date  = new Date(dd.time[i] + 'T12:00:00');
+        var parts = dd.time[i].split('-'); var date = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
         var dname = JOURS[date.getDay()] + ' ' + date.getDate() + '/' + (date.getMonth()+1);
         var dmax  = Math.round(dd.temperature_2m_max[i]);
         var dmin  = Math.round(dd.temperature_2m_min[i]);
@@ -237,12 +237,12 @@
 
         + '<div class="stats">'
           + '<div class="stat-card">'
-            + '<div class="stat-label">Vent · souffle vers</div>'
+            + '<div class="stat-label">Vent · vient du</div>'
             + '<div class="wind-row">'
               + '<div class="arrow-wrap"><span class="arrow-icon" style="display:inline-block;transform:rotate(' + arrowDeg + 'deg)">↑</span></div>'
               + '<div>'
                 + '<div class="stat-value">' + wind + '<span class="stat-unit">km/h</span></div>'
-                + '<div class="wind-dir-label">→ vers le ' + dir(wdeg) + '</div>'
+                + '<div class="wind-dir-label">vient du ' + dir(wdeg) + '</div>'
               + '</div>'
             + '</div>'
           + '</div>'
