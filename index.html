@@ -66,7 +66,7 @@
   .hour-rain.has-rain { color: #64b5f6; }
 
   .daily-block { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .day-row { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 12px; }
+  .day-row { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
   .day-left {}
   .day-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
   .day-desc { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
@@ -150,7 +150,7 @@
       + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weathercode"
       + "&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m"
       + "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,weathercode"
-      + "&wind_speed_unit=kmh&timezone=Europe%2FParis&forecast_days=6";
+      + "&wind_speed_unit=kmh&timezone=Europe%2FParis&forecast_days=7";
 
     fetch(url).then(function(r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
@@ -197,7 +197,7 @@
       /* 5 JOURS (index 1 à 5, on saute aujourd'hui = 0) */
       var dhtml = "";
       var dd = d.daily;
-      for (var i = 1; i <= 5; i++) {
+      for (var i = 1; i <= 6; i++) {
         if (!dd.time[i]) continue;
         var parts = dd.time[i].split('-'); var date = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
         var dname = JOURS[date.getDay()] + ' ' + date.getDate() + '/' + (date.getMonth()+1);
