@@ -12,293 +12,83 @@
     --card2: #1c2330;
     --border: rgba(255,255,255,0.06);
     --blue: #4fc3f7;
-    --blue-dark: #0288d1;
     --green: #66bb6a;
     --orange: #ffa726;
     --red: #ef5350;
     --text: #e6edf3;
     --muted: #7d8590;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: transparent; font-family: 'Barlow', sans-serif; color: var(--text); }
+  body { padding: 10px; }
 
-  body {
-    background: var(--bg);
-    font-family: 'Barlow', sans-serif;
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .widget {
-    width: 100%;
-    max-width: 480px;
-    animation: fadeIn 0.6s ease;
-  }
-
+  .widget { width: 100%; max-width: 480px; margin: auto; animation: fadeIn 0.6s ease; }
   @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
 
-  /* HEADER */
-  .header {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px 16px 0 0;
-    padding: 20px 24px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: none;
-  }
-
-  .location {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  .header { background: var(--card); border: 1px solid var(--border); border-radius: 16px 16px 0 0; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: none; }
+  .location { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
   .location span { color: var(--blue); }
-
-  .score-badge {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 20px;
-    background: rgba(102,187,106,0.15);
-    color: var(--green);
-    border: 1px solid rgba(102,187,106,0.3);
-    transition: all 0.4s;
-  }
+  .score-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; background: rgba(102,187,106,0.15); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
   .score-badge.warn { background: rgba(255,167,38,0.15); color: var(--orange); border-color: rgba(255,167,38,0.3); }
-  .score-badge.bad  { background: rgba(239,83,80,0.15);  color: var(--red);    border-color: rgba(239,83,80,0.3); }
+  .score-badge.bad  { background: rgba(239,83,80,0.15); color: var(--red); border-color: rgba(239,83,80,0.3); }
 
-  /* MAIN TEMP */
-  .main-block {
-    background: var(--card);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    padding: 8px 24px 20px;
-    display: flex;
-    align-items: flex-end;
-    gap: 20px;
-  }
-
-  .temp-now {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 5rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--text);
-  }
+  .main-block { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 8px 20px 16px; display: flex; align-items: flex-end; gap: 20px; }
+  .temp-now { font-family: 'Barlow Condensed', sans-serif; font-size: 5rem; font-weight: 800; line-height: 1; }
   .temp-now sup { font-size: 2rem; font-weight: 400; opacity: 0.6; vertical-align: super; }
-
-  .temp-details {
-    padding-bottom: 6px;
-  }
-  .temp-feels {
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
+  .temp-details { padding-bottom: 6px; }
+  .temp-feels { font-size: 0.85rem; color: var(--muted); }
   .temp-feels strong { color: var(--text); }
+  .weather-desc { font-size: 0.9rem; margin-top: 4px; color: var(--blue); font-weight: 500; text-transform: capitalize; }
 
-  .weather-desc {
-    font-size: 0.9rem;
-    margin-top: 4px;
-    color: var(--blue);
-    font-weight: 500;
-    text-transform: capitalize;
-  }
+  .stats { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; line-height: 1; }
+  .stat-unit { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 3px; }
+  .wind-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+  .arrow-wrap { width: 36px; height: 36px; border-radius: 50%; background: rgba(79,195,247,0.1); border: 1px solid rgba(79,195,247,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .arrow-icon { font-size: 1.2rem; color: var(--blue); display: inline-block; }
+  .wind-dir-label { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
 
-  /* STATS GRID */
-  .stats {
-    background: var(--card);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    padding: 0 16px 16px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .section-header { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 10px 20px 8px; border-top: 1px solid var(--border); }
+  .section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 
-  .stat-card {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-
-  .stat-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .stat-label svg { opacity: 0.5; }
-
-  .stat-value {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .stat-unit {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--muted);
-    margin-left: 3px;
-  }
-
-  .wind-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 2px;
-  }
-
-  .arrow-wrap {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: rgba(79,195,247,0.1);
-    border: 1px solid rgba(79,195,247,0.2);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .arrow-icon {
-    font-size: 1.2rem;
-    color: var(--blue);
-    display: inline-block;
-    transition: transform 0.8s cubic-bezier(.34,1.56,.64,1);
-  }
-
-  .wind-dir-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-top: 3px;
-  }
-
-  /* HOURLY */
-  .hourly-header {
-    background: var(--card);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    padding: 6px 24px 10px;
-    border-top: 1px solid var(--border);
-  }
-  .hourly-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .hourly-scroll {
-    background: var(--card);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    padding: 0 16px 16px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .hourly-track {
-    display: flex;
-    gap: 8px;
-    min-width: max-content;
-  }
-
-  .hour-card {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 12px;
-    text-align: center;
-    min-width: 68px;
-    transition: border-color 0.2s;
-  }
-  .hour-card:hover { border-color: rgba(79,195,247,0.3); }
+  .hourly-scroll { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .hourly-track { display: flex; gap: 8px; min-width: max-content; }
+  .hour-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; text-align: center; min-width: 68px; }
   .hour-card.now { border-color: rgba(79,195,247,0.5); background: rgba(79,195,247,0.06); }
-
-  .hour-time {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
+  .hour-time { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
   .hour-card.now .hour-time { color: var(--blue); }
-
-  .hour-temp {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .hour-wind {
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-top: 4px;
-  }
+  .hour-temp { font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1; }
+  .hour-wind { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
   .hour-wind span { color: var(--blue); font-weight: 600; }
-
-  .hour-rain {
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-top: 3px;
-  }
+  .hour-rain { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
   .hour-rain.has-rain { color: #64b5f6; }
 
-  /* FOOTER */
-  .footer {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 0 0 16px 16px;
-    border-top: none;
-    padding: 10px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .daily-block { background: var(--card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .day-row { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 12px; }
+  .day-left {}
+  .day-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .day-desc { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+  .day-temps { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; color: var(--muted); white-space: nowrap; text-align: right; }
+  .day-temps strong { color: var(--text); font-size: 1rem; }
+  .day-wind { font-size: 0.72rem; color: var(--muted); text-align: center; white-space: nowrap; }
+  .day-wind b { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--blue); }
+  .day-rain { font-size: 0.72rem; color: var(--muted); text-align: center; white-space: nowrap; }
+  .day-rain b { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700; }
+  .day-rain.has-rain b { color: #64b5f6; }
+  .day-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .day-dot.good { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .day-dot.warn { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+  .day-dot.bad  { background: var(--red);    box-shadow: 0 0 6px var(--red); }
 
-  .update-time {
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
-
-  .advice {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--green);
-  }
+  .footer { background: var(--card); border: 1px solid var(--border); border-radius: 0 0 16px 16px; border-top: none; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .update-time { font-size: 0.7rem; color: var(--muted); }
+  .advice { font-size: 0.75rem; font-weight: 500; color: var(--green); }
   .advice.warn { color: var(--orange); }
   .advice.bad  { color: var(--red); }
 
-  .loading-state {
-    text-align: center;
-    padding: 40px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-  }
-
+  .loading-state { text-align: center; padding: 40px; font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 0.1em; color: var(--muted); background: var(--card); border-radius: 16px; border: 1px solid var(--border); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .loading-dot { animation: pulse 1.4s infinite; }
   .loading-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -307,7 +97,7 @@
 </head>
 <body>
 
-<div class="widget" id="widget">
+<div class="widget" id="widget-meteo">
   <div class="loading-state">
     <span class="loading-dot">●</span> <span class="loading-dot">●</span> <span class="loading-dot">●</span>
     <div style="margin-top:10px; font-size:0.8rem;">Chargement météo...</div>
@@ -316,188 +106,173 @@
 
 <script>
 (function() {
-  // Magny-le-Hongre 77700
-  const LAT = 48.8561;
-  const LON = 2.8931;
-  const CITY = "Magny-le-Hongre";
+  var LAT  = 48.8561;
+  var LON  = 2.8931;
+  var CITY = "Magny-le-Hongre";
+  var DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
+  var JOURS = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
 
-  const WIND_DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
+  function dir(deg) { return DIRS[Math.round(deg / 22.5) % 16]; }
 
-  function degToDir(deg) {
-    return WIND_DIRS[Math.round(deg / 22.5) % 16];
+  function getScore(temp, wind, rain, feels) {
+    var s = 100;
+    if (temp < 5) s -= 30; else if (temp < 10) s -= 15; else if (temp > 35) s -= 20;
+    if (wind > 50) s -= 35; else if (wind > 30) s -= 20; else if (wind > 20) s -= 10;
+    if (rain > 5) s -= 40; else if (rain > 2) s -= 25; else if (rain > 0) s -= 10;
+    if (feels < 3) s -= 15;
+    if (s >= 75) return "good";
+    if (s >= 45) return "warn";
+    return "bad";
   }
 
-  function getBikeScore(temp, windKmh, rain, feelsLike) {
-    let score = 100;
-    // Température
-    if (temp < 5)  score -= 30;
-    else if (temp < 10) score -= 15;
-    else if (temp > 35) score -= 20;
-    // Vent
-    if (windKmh > 50) score -= 35;
-    else if (windKmh > 30) score -= 20;
-    else if (windKmh > 20) score -= 10;
-    // Pluie
-    if (rain > 2) score -= 40;
-    else if (rain > 0.5) score -= 20;
-    else if (rain > 0) score -= 10;
-    // Ressenti
-    if (feelsLike < 3) score -= 15;
-
-    if (score >= 75) return { label: "✓ Idéal pour rouler", cls: "good" };
-    if (score >= 45) return { label: "⚠ Conditions correctes", cls: "warn" };
-    return { label: "✗ Déconseillé", cls: "bad" };
+  function scoreLabel(cls) {
+    if (cls === "good") return "✓ Idéal pour rouler";
+    if (cls === "warn") return "⚠ Conditions correctes";
+    return "✗ Déconseillé";
   }
 
-  function formatHour(isoStr) {
-    const d = new Date(isoStr);
-    return d.getHours().toString().padStart(2, '0') + "h";
+  function desc(code) {
+    var m = {0:"Ciel dégagé",1:"Peu nuageux",2:"Partiellement nuageux",3:"Couvert",
+      45:"Brouillard",48:"Brouillard givrant",
+      51:"Bruine légère",53:"Bruine modérée",55:"Bruine dense",
+      61:"Pluie légère",63:"Pluie modérée",65:"Forte pluie",
+      71:"Neige légère",73:"Neige modérée",75:"Forte neige",
+      80:"Averses légères",81:"Averses",82:"Fortes averses",
+      95:"Orage",96:"Orage avec grêle",99:"Orage violent"};
+    return m[code] || "Variable";
   }
 
-  function rainBar(mm) {
-    if (mm === 0) return '<span>0 mm</span>';
-    return `<span class="has-rain">🌧 ${mm.toFixed(1)} mm</span>`;
-  }
+  function fmtH(iso) { return new Date(iso).getHours().toString().padStart(2,'0') + "h"; }
 
-  async function loadWeather() {
-    try {
-      const url = `https://api.open-meteo.com/v1/forecast`
-        + `?latitude=${LAT}&longitude=${LON}`
-        + `&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weathercode`
-        + `&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m`
-        + `&wind_speed_unit=kmh`
-        + `&timezone=Europe%2FParis`
-        + `&forecast_days=2`;
+  function load() {
+    var url = "https://api.open-meteo.com/v1/forecast"
+      + "?latitude=" + LAT + "&longitude=" + LON
+      + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weathercode"
+      + "&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m"
+      + "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_direction_10m_dominant,weathercode"
+      + "&wind_speed_unit=kmh&timezone=Europe%2FParis&forecast_days=6";
 
-      const r = await fetch(url);
+    fetch(url).then(function(r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
-      const d = await r.json();
+      return r.json();
+    }).then(function(d) {
 
-      const c = d.current;
-      const temp     = Math.round(c.temperature_2m);
-      const feels    = Math.round(c.apparent_temperature);
-      const wind     = Math.round(c.wind_speed_10m);
-      const windDeg  = c.wind_direction_10m ?? 0;
-      const rain     = c.precipitation ?? 0;
-      const wcode    = c.weathercode ?? 0;
+      /* CURRENT */
+      var c     = d.current;
+      var temp  = Math.round(c.temperature_2m);
+      var feels = Math.round(c.apparent_temperature);
+      var wind  = Math.round(c.wind_speed_10m);
+      var wdeg  = c.wind_direction_10m || 0;
+      var rain  = c.precipitation || 0;
+      var sc    = getScore(temp, wind, rain, feels);
 
-      const score = getBikeScore(temp, wind, rain, feels);
-      const windDir = degToDir(windDeg);
-      const desc = weatherDesc(wcode);
+      /* Flèche pointe VERS OÙ SOUFFLE le vent = wdeg sans modification */
+      var arrowDeg  = wdeg;
+      var rainColor = rain > 0 ? '#64b5f6' : 'var(--text)';
+      var rainTxt   = rain === 0 ? 'Pas de pluie' : rain < 1 ? 'Bruine légère' : rain < 3 ? 'Pluie modérée' : 'Forte pluie';
+      var adviceTxt = sc === 'good' ? '🚴 Route & VTT OK' : sc === 'warn' ? '⚡ Équipez-vous bien' : '🏠 Restez au chaud';
+      var timeStr   = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-      // Prévisions horaires — prochaines 12h
-      const now = new Date();
-      const nowHour = now.getHours();
-      const times = d.hourly.time;
-      const startIdx = times.findIndex(t => {
-        const h = new Date(t);
-        return h >= now;
-      });
+      /* HORAIRE 12h */
+      var now   = new Date();
+      var times = d.hourly.time;
+      var si    = 0;
+      for (var i = 0; i < times.length; i++) { if (new Date(times[i]) >= now) { si = i; break; } }
 
-      let hoursHtml = '';
-      for (let i = startIdx; i < startIdx + 12 && i < times.length; i++) {
-        const isNow = i === startIdx;
-        const hTemp  = Math.round(d.hourly.temperature_2m[i]);
-        const hWind  = Math.round(d.hourly.wind_speed_10m[i]);
-        const hRain  = d.hourly.precipitation[i] ?? 0;
-        const hDir   = degToDir(d.hourly.wind_direction_10m[i] ?? 0);
-        hoursHtml += `
-          <div class="hour-card${isNow ? ' now' : ''}">
-            <div class="hour-time">${isNow ? 'Maint.' : formatHour(times[i])}</div>
-            <div class="hour-temp">${hTemp}°</div>
-            <div class="hour-wind"><span>${hWind}</span> km/h ${hDir}</div>
-            <div class="hour-rain ${hRain > 0 ? 'has-rain' : ''}">${hRain > 0 ? '🌧 ' + hRain.toFixed(1) : '— mm'}</div>
-          </div>`;
+      var hhtml = "";
+      for (var i = si; i < si + 12 && i < times.length; i++) {
+        var isNow = i === si;
+        var ht = Math.round(d.hourly.temperature_2m[i]);
+        var hw = Math.round(d.hourly.wind_speed_10m[i]);
+        var hr = d.hourly.precipitation[i] || 0;
+        var hd = dir(d.hourly.wind_direction_10m[i] || 0);
+        hhtml += '<div class="hour-card' + (isNow ? ' now' : '') + '">'
+          + '<div class="hour-time">' + (isNow ? 'Maint.' : fmtH(times[i])) + '</div>'
+          + '<div class="hour-temp">' + ht + '°</div>'
+          + '<div class="hour-wind"><span>' + hw + '</span> km/h ' + hd + '</div>'
+          + '<div class="hour-rain' + (hr > 0 ? ' has-rain' : '') + '">' + (hr > 0 ? '🌧 ' + hr.toFixed(1) : '— mm') + '</div>'
+          + '</div>';
       }
 
-      const html = `
-        <div class="header">
-          <div class="location">📍 <span>${CITY}</span> · Île-de-France</div>
-          <div class="score-badge ${score.cls === 'good' ? '' : score.cls}">${score.label}</div>
-        </div>
+      /* 5 JOURS (index 1 à 5, on saute aujourd'hui = 0) */
+      var dhtml = "";
+      var dd = d.daily;
+      for (var i = 1; i <= 5; i++) {
+        if (!dd.time[i]) continue;
+        var date  = new Date(dd.time[i] + 'T12:00:00');
+        var dname = JOURS[date.getDay()] + ' ' + date.getDate() + '/' + (date.getMonth()+1);
+        var dmax  = Math.round(dd.temperature_2m_max[i]);
+        var dmin  = Math.round(dd.temperature_2m_min[i]);
+        var dwind = Math.round(dd.wind_speed_10m_max[i]);
+        var ddir  = dir(dd.wind_direction_10m_dominant[i] || 0);
+        var drain = dd.precipitation_sum[i] || 0;
+        var dcode = dd.weathercode[i] || 0;
+        var dsc   = getScore(dmax, dwind, drain, dmin);
+        dhtml += '<div class="day-row">'
+          + '<div class="day-left">'
+            + '<div class="day-name">' + dname + '</div>'
+            + '<div class="day-desc">' + desc(dcode) + '</div>'
+          + '</div>'
+          + '<div class="day-temps"><strong>' + dmax + '°</strong> / ' + dmin + '°</div>'
+          + '<div class="day-wind"><b>' + dwind + ' km/h</b>' + ddir + '</div>'
+          + '<div class="day-rain' + (drain > 0 ? ' has-rain' : '') + '"><b>' + (drain > 0 ? drain.toFixed(1) + ' mm' : '0 mm') + '</b>' + (drain > 0 ? '🌧' : '☀') + '</div>'
+          + '<div class="day-dot ' + dsc + '"></div>'
+          + '</div>';
+      }
 
-        <div class="main-block">
-          <div class="temp-now">${temp}<sup>°C</sup></div>
-          <div class="temp-details">
-            <div class="temp-feels">Ressenti <strong>${feels}°C</strong></div>
-            <div class="weather-desc">${desc}</div>
-          </div>
-        </div>
+      /* RENDU FINAL */
+      document.getElementById('widget-meteo').innerHTML =
+        '<div class="header">'
+          + '<div class="location">📍 <span>' + CITY + '</span> · Seine-et-Marne</div>'
+          + '<div class="score-badge ' + sc + '">' + scoreLabel(sc) + '</div>'
+        + '</div>'
 
-        <div class="stats">
-          <div class="stat-card">
-            <div class="stat-label">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v10m0 0a4 4 0 1 0 4 4"/><circle cx="12" cy="16" r="4"/></svg>
-              Vent actuel
-            </div>
-            <div class="wind-row">
-              <div class="arrow-wrap">
-                <span class="arrow-icon" id="wind-arrow" style="transform: rotate(${windDeg}deg)">↑</span>
-              </div>
-              <div>
-                <div class="stat-value">${wind}<span class="stat-unit">km/h</span></div>
-                <div class="wind-dir-label">${windDir}</div>
-              </div>
-            </div>
-          </div>
+        + '<div class="main-block">'
+          + '<div class="temp-now">' + temp + '<sup>°C</sup></div>'
+          + '<div class="temp-details">'
+            + '<div class="temp-feels">Ressenti <strong>' + feels + '°C</strong></div>'
+            + '<div class="weather-desc">' + desc(c.weathercode || 0) + '</div>'
+          + '</div>'
+        + '</div>'
 
-          <div class="stat-card">
-            <div class="stat-label">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-              Pluie (1h)
-            </div>
-            <div class="stat-value" style="color: ${rain > 0 ? '#64b5f6' : 'var(--text)'}">
-              ${rain.toFixed(1)}<span class="stat-unit">mm</span>
-            </div>
-            <div style="font-size:0.72rem; color: var(--muted); margin-top: 4px;">
-              ${rain === 0 ? 'Pas de pluie' : rain < 1 ? 'Bruine légère' : rain < 3 ? 'Pluie modérée' : 'Forte pluie'}
-            </div>
-          </div>
-        </div>
+        + '<div class="stats">'
+          + '<div class="stat-card">'
+            + '<div class="stat-label">Vent · souffle vers</div>'
+            + '<div class="wind-row">'
+              + '<div class="arrow-wrap"><span class="arrow-icon" style="display:inline-block;transform:rotate(' + arrowDeg + 'deg)">↑</span></div>'
+              + '<div>'
+                + '<div class="stat-value">' + wind + '<span class="stat-unit">km/h</span></div>'
+                + '<div class="wind-dir-label">→ vers le ' + dir(wdeg) + '</div>'
+              + '</div>'
+            + '</div>'
+          + '</div>'
+          + '<div class="stat-card">'
+            + '<div class="stat-label">Pluie (1h)</div>'
+            + '<div class="stat-value" style="color:' + rainColor + '">' + rain.toFixed(1) + '<span class="stat-unit">mm</span></div>'
+            + '<div style="font-size:0.72rem;color:var(--muted);margin-top:4px">' + rainTxt + '</div>'
+          + '</div>'
+        + '</div>'
 
-        <div class="hourly-header">
-          <div class="hourly-title">Prévisions · 12 prochaines heures</div>
-        </div>
-        <div class="hourly-scroll">
-          <div class="hourly-track">${hoursHtml}</div>
-        </div>
+        + '<div class="section-header"><div class="section-title">⏱ Prévisions · 12 prochaines heures</div></div>'
+        + '<div class="hourly-scroll"><div class="hourly-track">' + hhtml + '</div></div>'
 
-        <div class="footer">
-          <div class="update-time">Mise à jour : ${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</div>
-          <div class="advice ${score.cls === 'good' ? '' : score.cls}">${
-            score.cls === 'good' ? '🚴 Route & VTT OK' :
-            score.cls === 'warn' ? '⚡ Équipez-vous bien' :
-            '🏠 Restez au chaud'
-          }</div>
-        </div>
-      `;
+        + '<div class="section-header"><div class="section-title">📅 Prévisions · 5 prochains jours</div></div>'
+        + '<div class="daily-block">' + dhtml + '</div>'
 
-      document.getElementById('widget').innerHTML = html;
+        + '<div class="footer">'
+          + '<div class="update-time">Mise à jour : ' + timeStr + '</div>'
+          + '<div class="advice ' + sc + '">' + adviceTxt + '</div>'
+        + '</div>';
 
-    } catch(e) {
-      document.getElementById('widget').innerHTML = `
-        <div class="loading-state">
-          <div style="color:#ef5350">Erreur de chargement</div>
-          <div style="font-size:0.75rem; margin-top:8px; color:var(--muted)">${e.message}</div>
-        </div>`;
-    }
+    }).catch(function(e) {
+      document.getElementById('widget-meteo').innerHTML =
+        '<div class="loading-state"><div style="color:#ef5350">Erreur de chargement</div>'
+        + '<div style="font-size:0.75rem;margin-top:8px;color:var(--muted)">' + e.message + '</div></div>';
+    });
   }
 
-  function weatherDesc(code) {
-    const map = {
-      0: "Ciel dégagé", 1: "Peu nuageux", 2: "Partiellement nuageux", 3: "Couvert",
-      45: "Brouillard", 48: "Brouillard givrant",
-      51: "Bruine légère", 53: "Bruine modérée", 55: "Bruine dense",
-      61: "Pluie légère", 63: "Pluie modérée", 65: "Forte pluie",
-      71: "Neige légère", 73: "Neige modérée", 75: "Forte neige",
-      80: "Averses légères", 81: "Averses", 82: "Fortes averses",
-      95: "Orage", 96: "Orage avec grêle", 99: "Orage violent"
-    };
-    return map[code] || "Variable";
-  }
-
-  loadWeather();
-  setInterval(loadWeather, 600000);
+  load();
+  setInterval(load, 600000);
 })();
 </script>
 </body>
