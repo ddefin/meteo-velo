@@ -124,6 +124,13 @@
   .advice.warn{color:var(--orange);}
   .advice.bad{color:var(--red);}
 
+  /* GRAPHIQUE */
+  .chart-block{background:var(--card);border-left:1px solid var(--border);border-right:1px solid var(--border);padding:10px 12px 8px;}
+  .chart-legend{display:flex;gap:14px;margin-bottom:8px;padding:0 4px;}
+  .chart-legend-item{display:flex;align-items:center;gap:5px;font-size:0.65rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em;text-transform:uppercase;}
+  .chart-legend-dot{width:10px;height:3px;border-radius:2px;}
+  .chart-svg{width:100%;display:block;overflow:visible;}
+
   .loading-state{text-align:center;padding:40px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:0.1em;color:var(--muted);background:var(--card);border-radius:14px;border:1px solid var(--border);}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
   .loading-dot{animation:pulse 1.4s infinite;}
@@ -302,8 +309,116 @@ function switchTab(t) {
     + '</div></div>';
   }
 
-  /* MÉTÉO PRINCIPALE */
-  function load() {
+  /* CONSTRUCTION GRAPHIQUE SVG */
+  function buildChart(times, temps, winds, gusts, rains, si) {
+    var N = 24; // 24 heures
+    var pts = [];
+    for (var i = si; i < si + N && i < times.length; i++) pts.push(i);
+    if (pts.length < 2) return '';
+
+    var W = 440, H = 110;
+    var padL = 30, padR = 8, padT = 18, padB = 28;
+    var cW = W - padL - padR;
+    var cH = H - padT - padB;
+
+    // Données
+    var tVals = pts.map(function(i){ return temps[i]; });
+    var wVals = pts.map(function(i){ return winds[i]; });
+    var gVals = pts.map(function(i){ return gusts[i]; });
+    var rVals = pts.map(function(i){ return rains[i] || 0; });
+
+    var tMin = Math.floor(Math.min.apply(null, tVals)) - 1;
+    var tMax = Math.ceil(Math.max.apply(null, tVals)) + 1;
+    var wMax = Math.ceil(Math.max.apply(null, gVals) / 10) * 10 + 5;
+    var rMax = Math.max.apply(null, rVals);
+    if (rMax < 1) rMax = 1;
+
+    function xPos(idx) { return padL + (idx / (pts.length - 1)) * cW; }
+    function yTemp(v)  { return padT + cH - ((v - tMin) / (tMax - tMin)) * cH; }
+    function yWind(v)  { return padT + cH - (v / wMax) * cH; }
+
+    var svg = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+    // Grille horizontale
+    var gridSteps = [0, 0.25, 0.5, 0.75, 1];
+    gridSteps.forEach(function(s) {
+      var y = padT + cH * (1 - s);
+      svg += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>';
+    });
+
+    // Barres pluie (fond, axe droit implicite)
+    var barW = Math.max(2, cW / pts.length - 2);
+    rVals.forEach(function(r, idx) {
+      if (r <= 0) return;
+      var x = xPos(idx) - barW / 2;
+      var bH = Math.min((r / rMax) * (cH * 0.4), cH * 0.4);
+      var y = padT + cH - bH;
+      svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + bH + '" fill="rgba(100,181,246,0.35)" rx="1"/>';
+    });
+
+    // Zone remplie vent (rafales)
+    var gustPath = 'M ' + xPos(0) + ' ' + yWind(gVals[0]);
+    for (var i = 1; i < pts.length; i++) gustPath += ' L ' + xPos(i) + ' ' + yWind(gVals[i]);
+    gustPath += ' L ' + xPos(pts.length - 1) + ' ' + (padT + cH) + ' L ' + xPos(0) + ' ' + (padT + cH) + ' Z';
+    svg += '<path d="' + gustPath + '" fill="rgba(255,167,38,0.08)" stroke="none"/>';
+
+    // Courbe vent moyen
+    var windPath = 'M ' + xPos(0) + ' ' + yWind(wVals[0]);
+    for (var i = 1; i < pts.length; i++) windPath += ' L ' + xPos(i) + ' ' + yWind(wVals[i]);
+    svg += '<path d="' + windPath + '" fill="none" stroke="#ffa726" stroke-width="1.5" stroke-opacity="0.7" stroke-dasharray="4,3"/>';
+
+    // Zone remplie température
+    var tempArea = 'M ' + xPos(0) + ' ' + yTemp(tVals[0]);
+    for (var i = 1; i < pts.length; i++) {
+      var x0 = xPos(i-1), y0 = yTemp(tVals[i-1]);
+      var x1 = xPos(i),   y1 = yTemp(tVals[i]);
+      var cx = (x0 + x1) / 2;
+      tempArea += ' C ' + cx + ' ' + y0 + ' ' + cx + ' ' + y1 + ' ' + x1 + ' ' + y1;
+    }
+    tempArea += ' L ' + xPos(pts.length - 1) + ' ' + (padT + cH) + ' L ' + xPos(0) + ' ' + (padT + cH) + ' Z';
+    svg += '<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4fc3f7" stop-opacity="0.25"/><stop offset="100%" stop-color="#4fc3f7" stop-opacity="0.02"/></linearGradient></defs>';
+    svg += '<path d="' + tempArea + '" fill="url(#tg)" stroke="none"/>';
+
+    // Courbe température (lissée)
+    var tempLine = 'M ' + xPos(0) + ' ' + yTemp(tVals[0]);
+    for (var i = 1; i < pts.length; i++) {
+      var x0 = xPos(i-1), y0 = yTemp(tVals[i-1]);
+      var x1 = xPos(i),   y1 = yTemp(tVals[i]);
+      var cx = (x0 + x1) / 2;
+      tempLine += ' C ' + cx + ' ' + y0 + ' ' + cx + ' ' + y1 + ' ' + x1 + ' ' + y1;
+    }
+    svg += '<path d="' + tempLine + '" fill="none" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round"/>';
+
+    // Labels température sur la courbe (toutes les 4h)
+    tVals.forEach(function(t, idx) {
+      if (idx % 4 !== 0) return;
+      var x = xPos(idx), y = yTemp(t) - 5;
+      svg += '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="8" fill="#4fc3f7" font-family="Barlow Condensed,sans-serif" font-weight="600">' + Math.round(t) + '°</text>';
+    });
+
+    // Axe gauche (température)
+    [tMin, Math.round((tMin+tMax)/2), tMax].forEach(function(v) {
+      var y = yTemp(v);
+      svg += '<text x="' + (padL - 4) + '" y="' + (y + 3) + '" text-anchor="end" font-size="7.5" fill="#7d8590" font-family="Barlow Condensed,sans-serif">' + Math.round(v) + '°</text>';
+    });
+
+    // Labels heure axe X (toutes les 4h)
+    pts.forEach(function(pi, idx) {
+      if (idx % 4 !== 0) return;
+      var h = new Date(times[pi]).getHours();
+      var label = h.toString().padStart(2,'0') + 'h';
+      var x = xPos(idx);
+      svg += '<text x="' + x + '" y="' + (H - 6) + '" text-anchor="middle" font-size="8" fill="#7d8590" font-family="Barlow Condensed,sans-serif">' + label + '</text>';
+      svg += '<line x1="' + x + '" y1="' + (padT + cH + 2) + '" x2="' + x + '" y2="' + (padT + cH + 5) + '" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>';
+    });
+
+    // Ligne "maintenant"
+    svg += '<line x1="' + xPos(0) + '" y1="' + padT + '" x2="' + xPos(0) + '" y2="' + (padT + cH) + '" stroke="#4fc3f7" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="3,3"/>';
+    svg += '<text x="' + (xPos(0) + 3) + '" y="' + (padT + 7) + '" font-size="7" fill="#4fc3f7" font-family="Barlow Condensed,sans-serif">maintenant</text>';
+
+    svg += '</svg>';
+    return svg;
+  }
     fetch("https://api.open-meteo.com/v1/forecast"
       + "?latitude=" + LAT + "&longitude=" + LON
       + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weathercode,relative_humidity_2m,uv_index"
@@ -428,8 +543,15 @@ function switchTab(t) {
             + '<span class="ai-icon">🤖</span>'
             + '<div class="ai-text" id="ai-comment"><span class="ai-loading">⏳ Analyse en cours...</span></div>'
           + '</div></div>'
-          + '<div class="section-header"><div class="section-title">⏱ 12 prochaines heures</div></div>'
-          + '<div class="hourly-scroll"><div class="hourly-track">' + hhtml + '</div></div>'
+          + '<div class="section-header"><div class="section-title">📈 Température · Vent · Pluie — 24h</div></div>'
+          + '<div class="chart-block">'
+            + '<div class="chart-legend">'
+              + '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#4fc3f7"></div>Température</div>'
+              + '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#ffa726"></div>Vent (rafales)</div>'
+              + '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(100,181,246,0.5)"></div>Pluie</div>'
+            + '</div>'
+            + buildChart(times, d.hourly.temperature_2m, d.hourly.wind_speed_10m, d.hourly.wind_gusts_10m, d.hourly.precipitation, si)
+          + '</div>'
         + '</div>'
 
         /* JOURS SUIVANTS */
