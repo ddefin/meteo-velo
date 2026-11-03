@@ -22,6 +22,9 @@ curl -X POST https://exemple.fr/api/position -H "Authorization: Bearer un-long-s
      -d '{"lat":45.19,"lon":5.72,"alt":230,"bat":87}'      # t (ms epoch) optionnel ; tableau accepté
 curl -X POST … -d '{"finished":true}'                       # fin de sortie explicite
 ```
+**Depuis un téléphone** : ouvrez `https://exemple.fr/tracker.html` (HTTPS obligatoire pour le GPS), saisissez le jeton, « Démarrer » ; écran allumé (Wake Lock), file d'attente hors-ligne, bouton « Terminer ».
+**OwnTracks** (mode HTTP) : URL `https://exemple.fr/api/position?token=un-long-secret` — le format natif (`tst`, `batt`, `vel`) est reconnu.
+
 Les points sont persistés dans `data/live-track.ndjson` (rechargés au redémarrage). Derrière nginx : désactiver le buffering pour `/api/stream` (`proxy_buffering off;`, le serveur envoie déjà `X-Accel-Buffering: no`) et mettre HTTPS.
 Le parcours prévu est `data/route.gpx` (`meta.routeUrl`) ; sans GPX l'app fonctionne mais sans ETA ni « restant ».
 

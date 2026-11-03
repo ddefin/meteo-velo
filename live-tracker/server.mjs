@@ -7,6 +7,7 @@
 //   GET  /api/stream             Server-Sent Events (event: point | finish | hello)
 //   POST /api/position           ingestion (header  Authorization: Bearer $INGEST_TOKEN)
 //                                corps : {t?,lat,lon,alt?,bat?,speed?}  ou tableau, ou  {"finished":true}
+//                                (jeton aussi accepté en ?token=… ; format OwnTracks HTTP reconnu : tst, batt, vel)
 // Env : PORT (8080), INGEST_TOKEN (obligatoire hors --replay), REPLAY_SPEED (30)
 import http from 'node:http';
 import { readFileSync, appendFileSync, existsSync, createReadStream, statSync } from 'node:fs';
@@ -63,7 +64,7 @@ setInterval(() => { for (const c of clients) c.write(': ping\n\n'); }, 20000);  
 const json = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(obj)); };
 const authOK = req => {
   if (REPLAY) return true;
-  const got = Buffer.from((req.headers.authorization || '').replace(/^Bearer /, ''));
+  const got = Buffer.from((req.headers.authorization || '').replace(/^Bearer /, '') || new URL(req.url, 'http://x').searchParams.get('token') || '');
   const want = Buffer.from(TOKEN);
   return TOKEN.length > 0 && got.length === want.length && timingSafeEqual(got, want);
 };
@@ -91,10 +92,12 @@ http.createServer((req, res) => {
         if (msg && msg.finished === true) { setFinished(); return json(res, 200, { ok: true }); }
         let n = 0;
         for (const p of Array.isArray(msg) ? msg : [msg]) {
+          if (p._type && p._type !== 'location') continue;                       // OwnTracks : ignore les autres messages
           if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
-          publish({ t: Number.isFinite(p.t) ? p.t : Date.now(), lat: p.lat, lon: p.lon, alt: p.alt ?? null, bat: p.bat ?? null, speed: p.speed ?? null }); n++;
+          publish({ t: Number.isFinite(p.t) ? p.t : Number.isFinite(p.tst) ? p.tst * 1000 : Date.now(), lat: p.lat, lon: p.lon,
+            alt: p.alt ?? null, bat: p.bat ?? p.batt ?? null, speed: p.speed ?? (p.vel != null ? p.vel / 3.6 : null) }); n++;   // OwnTracks : tst (s), batt (%), vel (km/h)
         }
-        json(res, 200, { ok: true, accepted: n });
+        json(res, 200, n || !Array.isArray(msg) ? { ok: true, accepted: n } : []);
       } catch { json(res, 400, { error: 'bad json' }); }
     });
     return;

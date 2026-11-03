@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tracker · envoi GPS</title><meta name="robots" content="noindex">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;padding:20px;font:16px system-ui,sans-serif;background:#090b10;color:#e8ecf3;max-width:480px;margin-inline:auto}
+h1{font-size:1.2rem}label{display:block;margin:14px 0 4px;color:#8c96a8;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #2a3142;background:#141821;color:inherit;font-size:16px}
+button{width:100%;margin-top:14px;padding:16px;border-radius:12px;border:0;font-size:1.05rem;font-weight:700;background:#39ff88;color:#04140a}
+button.sec{background:#1c212d;color:#e8ecf3}button.stop{background:#f87171;color:#200}
+pre{background:#141821;padding:12px;border-radius:10px;font-size:.85rem;white-space:pre-wrap}
+</style></head><body>
+<h1>📡 Tracker — envoi de la position</h1>
+<p style="color:#8c96a8;font-size:.9rem">Gardez cette page ouverte (écran allumé) pendant la sortie. Les points sont mis en file d'attente si le réseau tombe.</p>
+<label for="tok">Jeton (INGEST_TOKEN)</label><input id="tok" type="password" autocomplete="off">
+<button id="go">▶ Démarrer le suivi</button>
+<button id="fin" class="sec">🏁 Terminer la sortie</button>
+<pre id="log">Prêt.</pre>
+<script>
+const $=id=>document.getElementById(id), log=m=>$('log').textContent=m;
+const ls={g:k=>{try{return localStorage.getItem(k)}catch{return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+$('tok').value=ls.g('tk')||'';
+let watch=null,queue=JSON.parse(ls.g('q')||'[]'),lastSent=0,lock=null,sent=0,bat=null;
+const MIN_MS=5000, MAX_ACC=50;
+async function post(body){
+  const r=await fetch('api/position',{method:'POST',headers:{Authorization:'Bearer '+$('tok').value,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.status===401) throw new Error('Jeton refusé'); if(!r.ok) throw new Error('HTTP '+r.status);
+}
+async function flush(){
+  if(!queue.length) return;
+  const batch=queue.slice();
+  try{await post(batch);queue=queue.slice(batch.length);sent+=batch.length;ls.s('q',JSON.stringify(queue))}catch(e){status(e.message)}
+}
+function status(extra=''){log(`${watch!==null?'● Suivi actif':'○ Arrêté'}\nEnvoyés : ${sent}\nEn attente : ${queue.length}\nBatterie : ${bat??'?'} %\n${extra}`)}
+$('go').onclick=async()=>{
+  if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;lock?.release();$('go').textContent='▶ Démarrer le suivi';$('go').classList.remove('stop');return status()}
+  ls.s('tk',$('tok').value);
+  try{lock=await navigator.wakeLock?.request('screen')}catch{}
+  try{const b=await navigator.getBattery();bat=Math.round(b.level*100);b.onlevelchange=()=>{bat=Math.round(b.level*100)}}catch{}
+  watch=navigator.geolocation.watchPosition(pos=>{
+    const c=pos.coords; if(c.accuracy>MAX_ACC||pos.timestamp-lastSent<MIN_MS) return;
+    lastSent=pos.timestamp;
+    queue.push({t:pos.timestamp,lat:c.latitude,lon:c.longitude,alt:c.altitude,speed:c.speed,bat});
+    ls.s('q',JSON.stringify(queue)); flush().then(()=>status(`Précision : ${Math.round(c.accuracy)} m`));
+  },e=>status('GPS : '+e.message),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  $('go').textContent='⏹ Arrêter';$('go').classList.add('stop');status();
+};
+document.addEventListener('visibilitychange',async()=>{if(watch!==null&&!document.hidden){try{lock=await navigator.wakeLock?.request('screen')}catch{}}});
+setInterval(flush,15000);
+$('fin').onclick=async()=>{if(!confirm('Marquer la sortie comme terminée ?'))return;try{await flush();await post({finished:true});status('Sortie terminée ✔')}catch(e){status(e.message)}};
+status();
+</script></body></html>
