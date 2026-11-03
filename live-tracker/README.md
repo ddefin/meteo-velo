@@ -28,6 +28,15 @@ curl -X POST … -d '{"finished":true}'                       # fin de sortie ex
 Les points sont persistés dans `data/live-track.ndjson` (rechargés au redémarrage). Derrière nginx : désactiver le buffering pour `/api/stream` (`proxy_buffering off;`, le serveur envoie déjà `X-Accel-Buffering: no`) et mettre HTTPS.
 Le parcours prévu est `data/route.gpx` (`meta.routeUrl`) ; sans GPX l'app fonctionne mais sans ETA ni « restant ».
 
+## Déploiement sur un serveur (Debian/Ubuntu + systemd)
+
+```bash
+git clone … && cd meteo-velo/live-tracker && git checkout claude/live-tracking-sports-app-unjfml
+sudo sh deploy/install.sh        # utilisateur dédié, /opt/live-tracker, service systemd durci, jeton généré dans /etc/live-tracker.env
+sudo nano /etc/live-tracker.env  # optionnel : ATHLETE_NAME=Alex  EVENT_NAME="Ma sortie"   puis  sudo systemctl restart live-tracker
+```
+Puis nginx + HTTPS : adapter `deploy/nginx.conf` (nom de domaine), `sudo certbot --nginx -d suivi.exemple.fr`. Remplacer `/opt/live-tracker/data/route.gpx` par votre parcours. Logs : `journalctl -u live-tracker -f`.
+
 ## Architecture
 
 | Fichier | Rôle |

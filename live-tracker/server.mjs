@@ -8,7 +8,7 @@
 //   POST /api/position           ingestion (header  Authorization: Bearer $INGEST_TOKEN)
 //                                corps : {t?,lat,lon,alt?,bat?,speed?}  ou tableau, ou  {"finished":true}
 //                                (jeton aussi accepté en ?token=… ; format OwnTracks HTTP reconnu : tst, batt, vel)
-// Env : PORT (8080), INGEST_TOKEN (obligatoire hors --replay), REPLAY_SPEED (30)
+// Env : PORT (8080), INGEST_TOKEN (obligatoire hors --replay), REPLAY_SPEED (30), ATHLETE_NAME, EVENT_NAME
 import http from 'node:http';
 import { readFileSync, appendFileSync, existsSync, createReadStream, statSync } from 'node:fs';
 import { extname, join, normalize, dirname } from 'node:path';
@@ -24,7 +24,7 @@ const STORE = join(ROOT, 'data/live-track.ndjson');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.gpx': 'application/gpx+xml', '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 
-let meta = { name: 'Sortie en direct', routeUrl: 'data/route.gpx' };
+let meta = { name: process.env.EVENT_NAME || 'Sortie en direct', athlete: process.env.ATHLETE_NAME || '', routeUrl: 'data/route.gpx' };
 let points = [];
 let finished = false;
 let simBase = 0, wall0 = 0;                   // replay : temps simulé = simBase + (maintenant - wall0) * SPEED
