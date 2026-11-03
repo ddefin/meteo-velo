@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {                          /* thème sombre (Slate/Zinc) — défaut */
+  --bg: 9 11 16; --panel: 20 24 33; --panel2: 28 33 45; --line: 255 255 255;
+  --fg: 232 236 243; --mute: 140 150 168;
+  --neon: 57 255 136; --cyan: 34 211 238; --warn: 251 191 36; --bad: 248 113 113;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: 241 244 248; --panel: 255 255 255; --panel2: 238 242 247; --line: 15 23 42;
+  --fg: 15 23 42; --mute: 90 100 118;
+  --neon: 5 150 85; --cyan: 8 145 178; --warn: 180 110 0; --bad: 200 40 40;
+  color-scheme: light;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-bg text-fg font-sans antialiased; font-variant-numeric: tabular-nums; overscroll-behavior-y: none; }
+}
+@layer components {
+  .card   { @apply rounded-2xl border border-line/10 bg-panel; }
+  .tile   { @apply rounded-xl bg-panel2 border border-line/5 px-3 py-2.5 min-w-0; }
+  .tile-l { @apply text-[10px] font-semibold uppercase tracking-[.14em] text-mute; }
+  .tile-v { @apply mt-1 text-[1.6rem] leading-none font-bold tracking-tight; }
+  .tile-u { @apply ml-1 text-xs font-medium text-mute; }
+  .tile-s { @apply mt-1 text-[11px] text-mute truncate; }
+  .btn    { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line/10 bg-panel2 px-4 py-3 text-sm font-semibold active:scale-[.98] transition select-none; min-height: 44px; }
+  .btn:hover { @apply border-cyan/40; }
+  .chip   { @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold; }
+}
+
+/* ---- marqueur athlète : SVG + pulsation ---- */
+.ath { position: relative; width: 44px; height: 44px; }
+.ath svg { position: absolute; inset: 0; margin: auto; width: 30px; height: 30px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
+.ath .halo { position: absolute; inset: 0; border-radius: 9999px; background: rgb(var(--neon) / .35); opacity: 0; }
+.ath.live .halo { animation: pulse 1.8s ease-out infinite; }
+.ath.paused .halo, .ath.stale .halo { background: rgb(var(--warn) / .35); }
+.ath.paused .halo { animation: pulse 3s ease-out infinite; }
+.ath.finished .halo, .ath.stale .halo { animation: none; }
+@keyframes pulse { 0% { transform: scale(.35); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
+.leaflet-marker-icon.smooth { transition: transform 1.2s linear; }
+
+.pause-pin { width: 26px; height: 26px; border-radius: 9999px; display: grid; place-items: center; font-size: 13px;
+  background: rgb(var(--warn)); color: #1a1200; border: 2px solid rgb(var(--bg)); box-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.pause-pin.on { animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 50% { transform: scale(1.18); } }
+
+.cursor-dot { width: 16px; height: 16px; border-radius: 9999px; background: rgb(var(--cyan)); border: 3px solid #fff; box-shadow: 0 0 0 3px rgb(var(--cyan) / .35); }
+.pin-dot { width: 14px; height: 14px; border-radius: 9999px; background: #fff; border: 3px solid rgb(var(--warn)); }
+
+.leaflet-container { background: rgb(var(--bg)); font: inherit; touch-action: pan-x pan-y; }
+.leaflet-container a { color: rgb(var(--cyan)); }
+.leaflet-tooltip.tt { background: rgb(var(--panel)); color: rgb(var(--fg)); border: 1px solid rgb(var(--line) / .15); font-weight: 600; box-shadow: none; }
+.leaflet-tooltip.tt::before { display: none; }
+.leaflet-bar a { background: rgb(var(--panel)); color: rgb(var(--fg)); border-color: rgb(var(--line) / .12); }
+
+.fab { position: absolute; z-index: 500; }
+.collapsed-body { display: none; }
+@media (prefers-reduced-motion: reduce) { .ath .halo, .pause-pin.on { animation: none; } .leaflet-marker-icon.smooth { transition: none; } }

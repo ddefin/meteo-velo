@@ -1,0 +1,20 @@
+{
+  "name": "live-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Live tracking sportif auto-hébergé (Leaflet + Chart.js + SSE)",
+  "scripts": {
+    "start": "node server.mjs",
+    "demo": "node server.mjs --replay",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i css/input.css -o css/app.css --minify",
+    "mock": "node tools/generate-mock.mjs",
+    "vendor": "node tools/vendor.mjs",
+    "test": "node --test test/engine.test.js"
+  },
+  "devDependencies": {
+    "chart.js": "4.4.7",
+    "leaflet": "1.9.4",
+    "tailwindcss": "3.4.17"
+  }
+}

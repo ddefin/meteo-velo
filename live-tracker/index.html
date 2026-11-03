@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090b10">
+<title>Live Tracker</title>
+<meta name="description" content="Suivi en direct d'une sortie vélo longue distance">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23090b10' stroke='%2339ff88' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/app.css">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+
+<!-- ============ En-tête compact collant ============ -->
+<header class="sticky top-0 z-[1000] border-b border-line/10 bg-bg/90 backdrop-blur pt-[env(safe-area-inset-top)]">
+  <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5">
+    <div class="min-w-0 flex-1">
+      <h1 class="truncate text-base font-bold leading-tight" data-k="title">Live Tracker</h1>
+      <p class="flex items-center gap-1.5 truncate text-xs text-mute"><span id="connDot" class="inline-block h-2 w-2 rounded-full bg-mute"></span><span data-k="conn">Connexion…</span></p>
+    </div>
+    <span id="statusBadge" class="chip bg-panel2 text-mute" role="status" aria-live="polite">⏳ En attente</span>
+    <button id="themeBtn" class="btn !px-3 !py-2" aria-label="Changer de thème">🌓</button>
+  </div>
+</header>
+
+<main class="mx-auto grid max-w-6xl gap-3 px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3 lg:grid-cols-[minmax(0,1fr)_400px]">
+
+  <!-- ============ Tableau de bord (haut sur mobile, colonne droite sur desktop) ============ -->
+  <section class="space-y-3 lg:order-2 lg:sticky lg:top-[68px] lg:self-start" aria-label="Tableau de bord">
+
+    <div class="card p-4">
+      <div class="flex items-end justify-between gap-3">
+        <div>
+          <div class="tile-l">Arrivée estimée</div>
+          <div class="mt-1 text-[3.2rem] font-extrabold leading-none tracking-tight text-neon" data-k="eta">--:--</div>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-bold leading-none" data-k="etaIn">–</div>
+          <div class="mt-1 text-xs text-mute" data-k="etaSub">&nbsp;</div>
+        </div>
+      </div>
+      <div class="mt-4 h-2 overflow-hidden rounded-full bg-panel2" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progressBar">
+        <div id="progressFill" class="h-full w-0 rounded-full bg-gradient-to-r from-cyan to-neon transition-[width] duration-1000 ease-linear"></div>
+      </div>
+      <div class="mt-1.5 flex justify-between text-[11px] text-mute"><span data-k="pctLabel">0 %</span><span data-k="totalLabel">&nbsp;</span></div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+        <div class="tile "><div class="tile-l">Parcouru</div><div class="tile-v"><span data-k="dist">–</span><span class="tile-u">km</span></div><div class="tile-s" data-k="distSub">&nbsp;</div></div>
+        <div class="tile "><div class="tile-l">Restant</div><div class="tile-v"><span data-k="remain">–</span><span class="tile-u">km</span></div><div class="tile-s" data-k="remainSub">&nbsp;</div></div>
+        <div class="tile "><div class="tile-l">Moy. en mouvement</div><div class="tile-v"><span data-k="avg">–</span><span class="tile-u">km/h</span></div><div class="tile-s" data-k="avgSub">&nbsp;</div></div>
+        <div class="tile "><div class="tile-l">Vitesse actuelle</div><div class="tile-v"><span data-k="speed">–</span><span class="tile-u">km/h</span></div></div>
+        <div class="tile "><div class="tile-l">VAM</div><div class="tile-v"><span data-k="vam">–</span><span class="tile-u">m/h</span></div><div class="tile-s" data-k="vamSub">&nbsp;</div></div>
+        <div class="tile "><div class="tile-l">Pente</div><div class="tile-v"><span data-k="grade">–</span><span class="tile-u">%</span></div></div>
+        <div class="tile "><div class="tile-l">D+ cumulé</div><div class="tile-v"><span data-k="ascent">–</span><span class="tile-u">m</span></div><div class="tile-s" data-k="ascentSub">&nbsp;</div></div>
+        <div class="tile "><div class="tile-l">Batterie</div><div class="tile-v"><span data-k="battery">–</span><span class="tile-u">%</span></div><div class="tile-s" data-k="batterySub">&nbsp;</div></div>
+      <div class="tile col-span-2"><div class="tile-l">Dernier point reçu</div>
+        <div class="mt-1 flex items-baseline justify-between gap-3"><span class="text-xl font-bold" data-k="age">–</span><span class="truncate text-xs text-mute" data-k="timeSub">&nbsp;</span></div></div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <a id="tgBtn" class="btn !bg-[#229ED9] !text-white !border-transparent" href="https://t.me/share/url" target="_blank" rel="noopener">✈️ Telegram</a>
+      <button id="gpxBtn" class="btn">⬇️ Export GPX</button>
+    </div>
+  </section>
+
+  <!-- ============ Carte + profil ============ -->
+  <section class="space-y-3 lg:order-1" aria-label="Carte et profil">
+
+    <div class="card overflow-hidden">
+      <button class="flex w-full items-center justify-between px-4 py-3 text-left" data-collapse="mapBody" aria-expanded="true">
+        <span class="text-sm font-bold">🗺️ Carte</span><span class="text-mute transition-transform" data-chevron>▾</span>
+      </button>
+      <div id="mapBody">
+        <div class="relative">
+          <div id="map" class="h-[52vh] min-h-[320px] w-full lg:h-[560px]"></div>
+          <button id="followBtn" class="btn fab left-3 top-3 !bg-panel/90 !px-3 !py-2 backdrop-blur" aria-pressed="true">🎯 Suivi</button>
+          <button id="fitBtn" class="btn fab left-3 top-[58px] !bg-panel/90 !px-3 !py-2 backdrop-blur" aria-label="Voir tout le parcours">⤢</button>
+          <div class="fab right-3 top-3 flex gap-1 rounded-xl border border-line/10 bg-panel/90 p-1 backdrop-blur" id="tileSwitch" role="group" aria-label="Fond de carte"></div>
+          <div class="fab bottom-3 left-3 rounded-xl border border-line/10 bg-panel/90 p-1 backdrop-blur" id="modeSwitch" role="group" aria-label="Coloration de la trace"></div>
+          <div class="fab bottom-14 left-3 hidden items-center gap-2 rounded-lg border border-line/10 bg-panel/90 px-2 py-1 text-[10px] text-mute backdrop-blur sm:flex" id="legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card overflow-hidden">
+      <button class="flex w-full items-center justify-between px-4 py-3 text-left" data-collapse="chartBody" aria-expanded="true">
+        <span class="text-sm font-bold">⛰️ Profil d'altitude</span>
+        <span class="flex items-center gap-3 text-xs text-mute"><span data-k="profileInfo"></span><span class="transition-transform" data-chevron>▾</span></span>
+      </button>
+      <div id="chartBody" class="px-2 pb-3"><div class="relative h-[200px] w-full lg:h-[230px]"><canvas id="profile" aria-label="Profil d'altitude du parcours"></canvas></div></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="pointer-events-none fixed inset-x-0 bottom-4 z-[2000] mx-auto w-fit max-w-[90vw] translate-y-4 rounded-xl bg-panel2 px-4 py-2 text-sm font-semibold opacity-0 shadow-lg transition" role="status"></div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/chart.umd.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
