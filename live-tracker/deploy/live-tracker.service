@@ -1,0 +1,21 @@
+[Unit]
+Description=Live Tracker (suivi sportif en direct)
+After=network.target
+
+[Service]
+User=live-tracker
+Group=live-tracker
+WorkingDirectory=/opt/live-tracker
+EnvironmentFile=/etc/live-tracker.env
+ExecStart=/usr/bin/env node server.mjs
+Restart=on-failure
+RestartSec=3
+# durcissement : seul data/ est inscriptible (persistance des points)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/live-tracker/data
+
+[Install]
+WantedBy=multi-user.target
