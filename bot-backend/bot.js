@@ -10,6 +10,11 @@ const ADMIN_CHAT_IDS = (process.env.ADMIN_CHAT_ID || "")
   .split(",")
   .map((id) => id.trim())
   .filter(Boolean);
+const MINI_APP_URL = process.env.MINI_APP_URL;
+if (!MINI_APP_URL) {
+  console.error("Missing MINI_APP_URL environment variable.");
+  process.exit(1);
+}
 const API = `https://api.telegram.org/bot${TOKEN}`;
 
 const ORDERS_FILE = path.join(__dirname, "data", "orders.jsonl");
@@ -71,6 +76,17 @@ async function handleWebAppData(message) {
   }
 }
 
+async function handleStart(message) {
+  await callApi("sendMessage", {
+    chat_id: message.chat.id,
+    text: "Bienvenue ! Ouvrez la boutique ci-dessous pour parcourir nos parfums et passer commande.",
+    reply_markup: {
+      keyboard: [[{ text: "🛍️ Ouvrir la boutique", web_app: { url: MINI_APP_URL } }]],
+      resize_keyboard: true,
+    },
+  });
+}
+
 async function poll() {
   let offset = 0;
   await callApi("deleteWebhook", { drop_pending_updates: false });
@@ -90,6 +106,8 @@ async function poll() {
         const message = update.message;
         if (message && message.web_app_data) {
           handleWebAppData(message).catch((err) => console.error("Error handling order:", err));
+        } else if (message && message.text === "/start") {
+          handleStart(message).catch((err) => console.error("Error handling /start:", err));
         }
       }
     } catch (err) {
