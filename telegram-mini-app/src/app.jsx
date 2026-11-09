@@ -452,7 +452,7 @@ function App() {
           window.alert(msg);
         }
       };
-      const diag = `platform=${tg.platform} version=${tg.version} sendData=${typeof tg.sendData}`;
+      const diag = `platform=${tg.platform} version=${tg.version} sendData=${typeof tg.sendData} initDataLen=${(tg.initData || "").length} user=${tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "none"}`;
 
       try {
         tg.sendData(JSON.stringify(payload));
