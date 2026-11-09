@@ -445,14 +445,12 @@ function App() {
         total: Number(total.toFixed(2)),
       };
 
-      if (tg.showConfirm) {
-        tg.showConfirm(`Confirmer la commande pour ${formatPrice(total)} ?`, (confirmed) => {
-          if (confirmed) {
-            tg.sendData(JSON.stringify(payload));
-          }
-        });
-      } else {
+      try {
         tg.sendData(JSON.stringify(payload));
+      } catch (err) {
+        if (tg.showAlert) {
+          tg.showAlert("Erreur lors de l'envoi de la commande : " + err.message);
+        }
       }
     };
 
