@@ -6,7 +6,10 @@ if (!TOKEN) {
   console.error("Missing BOT_TOKEN environment variable.");
   process.exit(1);
 }
-const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || null;
+const ADMIN_CHAT_IDS = (process.env.ADMIN_CHAT_ID || "")
+  .split(",")
+  .map((id) => id.trim())
+  .filter(Boolean);
 const API = `https://api.telegram.org/bot${TOKEN}`;
 
 const ORDERS_FILE = path.join(__dirname, "data", "orders.jsonl");
@@ -59,12 +62,12 @@ async function handleWebAppData(message) {
     text: `Merci pour votre commande ! 🎉\n\n${formatOrder(payload)}\n\nNous revenons vers vous rapidement.`,
   });
 
-  if (ADMIN_CHAT_ID) {
+  if (ADMIN_CHAT_IDS.length > 0) {
     const who = message.from.username ? `@${message.from.username}` : message.from.first_name;
-    await callApi("sendMessage", {
-      chat_id: ADMIN_CHAT_ID,
-      text: `🛒 Nouvelle commande de ${who} (chat ${message.chat.id})\n\n${formatOrder(payload)}`,
-    });
+    const text = `🛒 Nouvelle commande de ${who} (chat ${message.chat.id})\n\n${formatOrder(payload)}`;
+    for (const adminId of ADMIN_CHAT_IDS) {
+      await callApi("sendMessage", { chat_id: adminId, text });
+    }
   }
 }
 

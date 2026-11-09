@@ -36,9 +36,10 @@ sudo docker run -d \
 ```
 
 - `BOT_TOKEN` : obtenu via [@BotFather](https://t.me/BotFather) → `/mybots` → votre bot → **API Token**
-- `ADMIN_CHAT_ID` (optionnel) : l'identifiant numérique du chat où vous voulez recevoir une notification
-  à chaque nouvelle commande. Pour l'obtenir, envoyez un message à [@userinfobot](https://t.me/userinfobot)
-  depuis le compte/chat que vous voulez utiliser comme admin.
+- `ADMIN_CHAT_ID` (optionnel) : un ou plusieurs identifiants numériques de chat où recevoir une
+  notification à chaque nouvelle commande, séparés par des virgules si plusieurs
+  (ex: `"1189289302,114089989"`). Pour obtenir un ID, envoyez un message à
+  [@userinfobot](https://t.me/userinfobot) depuis le compte/chat concerné.
 - Le volume `data/` persiste les commandes (`orders.jsonl`) même si le conteneur redémarre.
 
 ## Vérifier que ça tourne
