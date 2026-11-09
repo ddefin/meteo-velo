@@ -102,6 +102,7 @@ async function poll() {
         continue;
       }
       for (const update of data.result) {
+        console.log("[DEBUG raw update]", JSON.stringify(update));
         offset = update.update_id + 1;
         const message = update.message;
         if (message && message.web_app_data) {
