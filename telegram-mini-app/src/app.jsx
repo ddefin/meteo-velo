@@ -18,14 +18,63 @@ function formatPrice(value) {
   return value.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 }
 
+// ---------- Contact (vitrine : les commandes passent par David, pas de paiement en ligne) ----------
+const CONTACT_NAME = "David De France";
+const CONTACT_PHONE_DISPLAY = "07 81 19 92 98";
+const CONTACT_PHONE_TEL = "+33781199298";
+const CONTACT_PHONE_WA = "33781199298";
+
+function buildOrderMessage(items, total) {
+  if (items.length === 0) {
+    return "Bonjour David, j'aimerais avoir des informations sur vos produits olfazeta.";
+  }
+  const lines = items.map(
+    ({ product, qty }) => `• ${product.name} x${qty} — ${formatPrice(product.price * qty)}`
+  );
+  return `Bonjour David, je souhaite commander :\n${lines.join("\n")}\n\nTotal estimé : ${formatPrice(
+    total
+  )}\n\nMerci !`;
+}
+
+function openLink(url) {
+  if (tg && tg.openLink) {
+    tg.openLink(url);
+  } else {
+    window.open(url, "_blank");
+  }
+}
+
+function callContact() {
+  haptic("medium");
+  window.location.href = `tel:${CONTACT_PHONE_TEL}`;
+}
+
+function whatsappContact(items, total) {
+  haptic("medium");
+  const url = `https://wa.me/${CONTACT_PHONE_WA}?text=${encodeURIComponent(buildOrderMessage(items, total))}`;
+  openLink(url);
+}
+
 // ---------- Header ----------
-function Header({ query, onQueryChange }) {
+function Header({ query, onQueryChange, onContact }) {
   return (
     <header className="sticky top-0 z-20 bg-[var(--tg-theme-bg-color,#fff)]/95 backdrop-blur border-b border-black/5 dark:border-white/10 px-4 pt-3 pb-3">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3 gap-2">
         <h1 className="text-[17px] font-semibold tracking-tight text-[var(--tg-theme-text-color,#111)]">
           Parfums &amp; Accessoires
         </h1>
+        <button
+          onClick={() => {
+            haptic("light");
+            onContact();
+          }}
+          className="shrink-0 flex items-center gap-1.5 rounded-full bg-[var(--tg-theme-secondary-bg-color,#f2f2f7)] text-[var(--tg-theme-link-color,#2481cc)] text-[12.5px] font-semibold px-3 py-1.5"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path d="M3 5a2 2 0 0 1 2-2h2.28a1 1 0 0 1 .95.68l1.1 3.3a1 1 0 0 1-.27 1.03L7.6 9.5a11 11 0 0 0 5.9 5.9l1.49-1.46a1 1 0 0 1 1.03-.27l3.3 1.1a1 1 0 0 1 .68.95V18a2 2 0 0 1-2 2A16 16 0 0 1 3 5Z" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Contact
+        </button>
       </div>
       <div className="relative">
         <svg
@@ -307,7 +356,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
             }}
             className="w-full py-3.5 rounded-2xl bg-[var(--tg-theme-button-color,#2481cc)] text-[var(--tg-theme-button-text-color,#fff)] text-[15px] font-semibold"
           >
-            Ajouter au panier · {formatPrice(product.price * qty)}
+            Ajouter à ma sélection · {formatPrice(product.price * qty)}
           </button>
         </div>
       </div>
@@ -315,8 +364,8 @@ function ProductModal({ product, onClose, onAddToCart }) {
   );
 }
 
-// ---------- Cart summary bar ----------
-function CartBar({ itemCount, total, onOpen }) {
+// ---------- Selection summary bar ----------
+function SelectionBar({ itemCount, total, onOpen }) {
   if (itemCount === 0) return null;
   return (
     <button
@@ -330,15 +379,15 @@ function CartBar({ itemCount, total, onOpen }) {
         <span className="w-5 h-5 rounded-full bg-white/25 flex items-center justify-center text-[11px]">
           {itemCount}
         </span>
-        Voir le panier
+        Voir ma sélection
       </span>
       <span className="text-[14px] font-bold">{formatPrice(total)}</span>
     </button>
   );
 }
 
-// ---------- Cart sheet ----------
-function CartSheet({ open, items, onClose, onChangeQty, onRemove }) {
+// ---------- Selection sheet ----------
+function SelectionSheet({ open, items, onClose, onChangeQty, onRemove, onContact }) {
   if (!open) return null;
   const total = items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
   return (
@@ -349,10 +398,10 @@ function CartSheet({ open, items, onClose, onChangeQty, onRemove }) {
           <div className="w-9 h-1 rounded-full bg-black/15 dark:bg-white/20" />
         </div>
         <div className="px-5 pt-2 pb-6">
-          <h2 className="text-[17px] font-bold text-[var(--tg-theme-text-color,#111)] mb-3">Votre panier</h2>
+          <h2 className="text-[17px] font-bold text-[var(--tg-theme-text-color,#111)] mb-3">Ma sélection</h2>
           {items.length === 0 && (
             <p className="text-[14px] text-[var(--tg-theme-hint-color,#999)] py-6 text-center">
-              Votre panier est vide.
+              Votre sélection est vide.
             </p>
           )}
           <div className="divide-y divide-black/5 dark:divide-white/10">
@@ -393,12 +442,76 @@ function CartSheet({ open, items, onClose, onChangeQty, onRemove }) {
             ))}
           </div>
           {items.length > 0 && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-black/5 dark:border-white/10">
-              <span className="text-[15px] font-semibold text-[var(--tg-theme-text-color,#111)]">Total</span>
-              <span className="text-[17px] font-bold text-[var(--tg-theme-text-color,#111)]">{formatPrice(total)}</span>
-            </div>
+            <>
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-black/5 dark:border-white/10">
+                <span className="text-[15px] font-semibold text-[var(--tg-theme-text-color,#111)]">
+                  Total estimé
+                </span>
+                <span className="text-[17px] font-bold text-[var(--tg-theme-text-color,#111)]">
+                  {formatPrice(total)}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  haptic("light");
+                  onContact();
+                }}
+                className="w-full mt-4 py-3.5 rounded-2xl bg-[var(--tg-theme-button-color,#2481cc)] text-[var(--tg-theme-button-text-color,#fff)] text-[15px] font-semibold"
+              >
+                Commander auprès de David
+              </button>
+            </>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Contact sheet (vitrine : la commande se finalise par téléphone / WhatsApp) ----------
+function ContactSheet({ open, onClose, items, total }) {
+  if (!open) return null;
+  const hasItems = items.length > 0;
+  return (
+    <div className="fixed inset-0 z-40 flex items-end justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative w-full bg-[var(--tg-theme-bg-color,#fff)] rounded-t-3xl animate-[slideUp_0.25s_ease-out] px-5 pt-2.5 pb-7">
+        <div className="pt-0 pb-3 flex justify-center">
+          <div className="w-9 h-1 rounded-full bg-black/15 dark:bg-white/20" />
+        </div>
+        <h2 className="text-[17px] font-bold text-[var(--tg-theme-text-color,#111)]">
+          {hasItems ? "Commander" : "Nous contacter"}
+        </h2>
+        <p className="text-[13.5px] text-[var(--tg-theme-hint-color,#999)] mt-1 leading-relaxed">
+          {hasItems
+            ? `Les commandes se font directement auprès de ${CONTACT_NAME}. Appelez-le ou envoyez-lui votre sélection (${items.length} article${items.length > 1 ? "s" : ""} · ${formatPrice(total)}) par WhatsApp.`
+            : `Une question sur nos produits ? ${CONTACT_NAME} vous répond.`}
+        </p>
+
+        <div className="mt-5 space-y-2.5">
+          <button
+            onClick={() => whatsappContact(items, total)}
+            className="w-full flex items-center gap-3 rounded-2xl bg-[#25D366] text-white px-4 py-3.5"
+          >
+            <svg className="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.82L2 22l5.4-1.42a9.9 9.9 0 0 0 4.64 1.18h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2Zm0 1.67c2.21 0 4.29.86 5.85 2.42a8.23 8.23 0 0 1 2.42 5.82c0 4.55-3.71 8.25-8.27 8.25a8.3 8.3 0 0 1-4.21-1.15l-.3-.18-3.2.84.86-3.12-.2-.32a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.71-8.18 8.3-8.18Zm-4.47 4.8c-.17 0-.44.06-.67.32-.23.26-.87.85-.87 2.08s.9 2.41 1.02 2.58c.13.17 1.76 2.8 4.37 3.82 2.16.85 2.6.68 3.07.64.47-.04 1.52-.62 1.73-1.22.21-.6.21-1.11.15-1.22-.06-.11-.23-.17-.47-.3-.25-.13-1.52-.75-1.76-.84-.23-.08-.4-.13-.57.13-.17.26-.66.84-.81 1.01-.15.17-.3.19-.55.06-.26-.13-1.08-.4-2.05-1.27-.76-.68-1.27-1.51-1.42-1.77-.15-.26-.02-.4.11-.53.12-.12.26-.3.4-.45.13-.15.17-.26.26-.43.08-.17.04-.32-.02-.45-.06-.13-.57-1.42-.8-1.94-.2-.5-.42-.44-.57-.45Z" />
+            </svg>
+            <span className="text-[14.5px] font-semibold">Commander sur WhatsApp</span>
+          </button>
+          <button
+            onClick={callContact}
+            className="w-full flex items-center gap-3 rounded-2xl bg-[var(--tg-theme-secondary-bg-color,#f2f2f7)] text-[var(--tg-theme-text-color,#111)] px-4 py-3.5"
+          >
+            <svg className="w-5 h-5 shrink-0 text-[var(--tg-theme-link-color,#2481cc)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path d="M3 5a2 2 0 0 1 2-2h2.28a1 1 0 0 1 .95.68l1.1 3.3a1 1 0 0 1-.27 1.03L7.6 9.5a11 11 0 0 0 5.9 5.9l1.49-1.46a1 1 0 0 1 1.03-.27l3.3 1.1a1 1 0 0 1 .68.95V18a2 2 0 0 1-2 2A16 16 0 0 1 3 5Z" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-[14.5px] font-semibold">Appeler {CONTACT_PHONE_DISPLAY}</span>
+          </button>
+        </div>
+
+        <p className="text-center text-[12px] text-[var(--tg-theme-hint-color,#999)] mt-4">
+          {CONTACT_NAME} · {CONTACT_PHONE_DISPLAY}
+        </p>
       </div>
     </div>
   );
@@ -410,6 +523,7 @@ function App() {
   const [category, setCategory] = useState("tous");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const [cart, setCart] = useState({}); // id -> { product, qty }
 
   const products = window.PRODUCTS;
@@ -456,13 +570,14 @@ function App() {
     });
   }, []);
 
-  // Telegram MainButton integration
   useEffect(() => {
     if (!tg) return;
     tg.ready();
     tg.expand();
   }, []);
 
+  // MainButton natif Telegram : ouvre la fiche de contact (pas de paiement en ligne,
+  // les commandes se finalisent par téléphone/WhatsApp auprès de David).
   useEffect(() => {
     if (!tg || !tg.MainButton) return;
 
@@ -475,41 +590,17 @@ function App() {
     tg.MainButton.show();
 
     const handleClick = () => {
-      haptic("success");
-      const payload = {
-        items: cartItems.map(({ product, qty }) => ({
-          id: product.id,
-          name: product.name,
-          qty,
-          price: product.price,
-        })),
-        total: Number(total.toFixed(2)),
-      };
-
-      const notify = (msg) => {
-        if (tg.showAlert) {
-          tg.showAlert(msg);
-        } else {
-          window.alert(msg);
-        }
-      };
-      const diag = `platform=${tg.platform} version=${tg.version} sendData=${typeof tg.sendData} initDataLen=${(tg.initData || "").length} user=${tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "none"}`;
-
-      try {
-        tg.sendData(JSON.stringify(payload));
-        notify(`[DEBUG] sendData() appelé sans erreur.\n${diag}`);
-      } catch (err) {
-        notify(`[DEBUG] Erreur sendData: ${err && err.message}\n${diag}`);
-      }
+      haptic("light");
+      setContactOpen(true);
     };
 
     tg.MainButton.onClick(handleClick);
     return () => tg.MainButton.offClick(handleClick);
-  }, [itemCount, total, cartItems]);
+  }, [itemCount, total]);
 
   return (
     <div className="min-h-screen pb-28 bg-[var(--tg-theme-bg-color,#fff)]">
-      <Header query={query} onQueryChange={setQuery} />
+      <Header query={query} onQueryChange={setQuery} onContact={() => setContactOpen(true)} />
       <CategoryTabs categories={categories} active={category} onChange={setCategory} />
       <ProductList
         products={filtered}
@@ -517,14 +608,24 @@ function App() {
         onOpen={setSelectedProduct}
         onQuickAdd={(p) => addToCart(p, 1)}
       />
-      <CartBar itemCount={itemCount} total={total} onOpen={() => setCartOpen(true)} />
+      <SelectionBar itemCount={itemCount} total={total} onOpen={() => setCartOpen(true)} />
       <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} />
-      <CartSheet
+      <SelectionSheet
         open={cartOpen}
         items={cartItems}
         onClose={() => setCartOpen(false)}
         onChangeQty={changeQty}
         onRemove={removeFromCart}
+        onContact={() => {
+          setCartOpen(false);
+          setContactOpen(true);
+        }}
+      />
+      <ContactSheet
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        items={cartItems}
+        total={total}
       />
     </div>
   );
