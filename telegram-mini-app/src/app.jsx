@@ -445,12 +445,20 @@ function App() {
         total: Number(total.toFixed(2)),
       };
 
+      const notify = (msg) => {
+        if (tg.showAlert) {
+          tg.showAlert(msg);
+        } else {
+          window.alert(msg);
+        }
+      };
+      const diag = `platform=${tg.platform} version=${tg.version} sendData=${typeof tg.sendData}`;
+
       try {
         tg.sendData(JSON.stringify(payload));
+        notify(`[DEBUG] sendData() appelé sans erreur.\n${diag}`);
       } catch (err) {
-        if (tg.showAlert) {
-          tg.showAlert("Erreur lors de l'envoi de la commande : " + err.message);
-        }
+        notify(`[DEBUG] Erreur sendData: ${err && err.message}\n${diag}`);
       }
     };
 
