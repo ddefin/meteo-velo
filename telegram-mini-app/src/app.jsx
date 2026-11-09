@@ -90,69 +90,80 @@ function CategoryTabs({ categories, active, onChange }) {
   );
 }
 
-// ---------- Product image with fallback ----------
-function ProductImage({ src, alt, className }) {
-  const [failed, setFailed] = useState(!src);
-  if (failed) {
-    return (
-      <div className={className + " flex items-center justify-center bg-[var(--tg-theme-secondary-bg-color,#f2f2f7)]"}>
-        <svg className="w-8 h-8 text-[var(--tg-theme-hint-color,#bbb)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-          <path d="M5 19 19 5M8 4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z" />
-        </svg>
-      </div>
-    );
-  }
-  return <img src={src} alt={alt} className={className} onError={() => setFailed(true)} loading="lazy" />;
+// ---------- Category identity (no product photos: a tinted monogram instead) ----------
+const CATEGORY_COLORS = {
+  femme: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  homme: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  mixte: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  luxe: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  luxury: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+  signature: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300",
+  maison: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  accessoires: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  enfants: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  coffrets: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+};
+
+function Avatar({ name, category, size }) {
+  const palette = CATEGORY_COLORS[category] || "bg-black/5 text-[var(--tg-theme-hint-color,#999)] dark:bg-white/10";
+  const initial = (name || "?").trim().charAt(0).toUpperCase();
+  return (
+    <div className={`flex items-center justify-center rounded-full font-bold shrink-0 ${palette} ${size}`}>
+      {initial}
+    </div>
+  );
 }
 
-// ---------- Product card ----------
-function ProductCard({ product, onOpen, onQuickAdd }) {
+// ---------- Product row ----------
+function ProductRow({ product, onOpen, onQuickAdd }) {
   return (
     <div
       onClick={() => {
         haptic("light");
         onOpen(product);
       }}
-      className="rounded-2xl bg-[var(--tg-theme-bg-color,#fff)] border border-black/5 dark:border-white/10 overflow-hidden active:scale-[0.98] transition-transform"
+      className="w-full flex items-center gap-3 px-4 py-3 active:bg-black/5 dark:active:bg-white/5"
     >
-      <ProductImage src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
-      <div className="p-3">
-        {product.tier && (
-          <span className="inline-block mb-1 text-[10px] font-semibold tracking-wide uppercase text-[var(--tg-theme-link-color,#2481cc)]">
-            {product.tier}
-          </span>
-        )}
-        <h3 className="text-[14px] font-semibold text-[var(--tg-theme-text-color,#111)] leading-tight truncate">
-          {product.name}
-        </h3>
-        <p className="text-[12px] text-[var(--tg-theme-hint-color,#999)] leading-snug mt-0.5 line-clamp-1">
+      <Avatar name={product.name} category={product.category} size="w-11 h-11 text-[16px]" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <h3 className="text-[14.5px] font-semibold text-[var(--tg-theme-text-color,#111)] leading-tight">
+            {product.name}
+          </h3>
+          {product.tier && (
+            <span className="shrink-0 text-[9.5px] font-semibold uppercase tracking-wide text-[var(--tg-theme-link-color,#2481cc)]">
+              {product.tier}
+            </span>
+          )}
+        </div>
+        <p className="text-[12px] text-[var(--tg-theme-hint-color,#999)] leading-snug mt-0.5 truncate">
           {product.subtitle}
         </p>
-        <div className="flex items-center justify-between mt-2.5">
-          <span className="text-[14px] font-bold text-[var(--tg-theme-text-color,#111)]">
-            {formatPrice(product.price)}
-          </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              haptic("medium");
-              onQuickAdd(product);
-            }}
-            aria-label="Ajouter"
-            className="w-8 h-8 rounded-full bg-[var(--tg-theme-button-color,#2481cc)] text-[var(--tg-theme-button-text-color,#fff)] flex items-center justify-center"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
+      </div>
+      <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
+        <span className="text-[14px] font-bold text-[var(--tg-theme-text-color,#111)] whitespace-nowrap">
+          {formatPrice(product.price)}
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            haptic("medium");
+            onQuickAdd(product);
+          }}
+          aria-label="Ajouter"
+          className="w-7 h-7 rounded-full bg-[var(--tg-theme-button-color,#2481cc)] text-[var(--tg-theme-button-text-color,#fff)] flex items-center justify-center"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+          </svg>
+        </button>
       </div>
     </div>
   );
 }
 
-// ---------- Product grid ----------
-function ProductGrid({ products, onOpen, onQuickAdd }) {
+// ---------- Product list (grouped by category when browsing "Tous") ----------
+function ProductList({ products, category, onOpen, onQuickAdd }) {
   if (products.length === 0) {
     return (
       <div className="px-4 py-16 text-center">
@@ -162,10 +173,34 @@ function ProductGrid({ products, onOpen, onQuickAdd }) {
       </div>
     );
   }
+
+  if (category !== "tous") {
+    return (
+      <div className="divide-y divide-black/5 dark:divide-white/10 py-1">
+        {products.map((p) => (
+          <ProductRow key={p.id} product={p} onOpen={onOpen} onQuickAdd={onQuickAdd} />
+        ))}
+      </div>
+    );
+  }
+
+  const groups = window.CATEGORIES.filter((c) => c.id !== "tous")
+    .map((c) => ({ ...c, items: products.filter((p) => p.category === c.id) }))
+    .filter((g) => g.items.length > 0);
+
   return (
-    <div className="grid grid-cols-2 gap-3 px-4 py-4">
-      {products.map((p) => (
-        <ProductCard key={p.id} product={p} onOpen={onOpen} onQuickAdd={onQuickAdd} />
+    <div className="pb-1">
+      {groups.map((g) => (
+        <div key={g.id}>
+          <div className="px-4 pt-4 pb-1 text-[11.5px] font-semibold uppercase tracking-wide text-[var(--tg-theme-hint-color,#999)]">
+            {g.label} <span className="font-normal opacity-70">· {g.items.length}</span>
+          </div>
+          <div className="divide-y divide-black/5 dark:divide-white/10">
+            {g.items.map((p) => (
+              <ProductRow key={p.id} product={p} onOpen={onOpen} onQuickAdd={onQuickAdd} />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -212,16 +247,22 @@ function ProductModal({ product, onClose, onAddToCart }) {
         <div className="sticky top-0 bg-[var(--tg-theme-bg-color,#fff)] pt-2.5 pb-1 flex justify-center">
           <div className="w-9 h-1 rounded-full bg-black/15 dark:bg-white/20" />
         </div>
-        <ProductImage src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
-        <div className="px-5 pt-4 pb-32">
-          {product.tier && (
-            <span className="inline-block mb-1 text-[11px] font-semibold tracking-wide uppercase text-[var(--tg-theme-link-color,#2481cc)]">
-              {product.tier}
-            </span>
-          )}
-          <h2 className="text-[20px] font-bold text-[var(--tg-theme-text-color,#111)]">{product.name}</h2>
-          <p className="text-[13px] text-[var(--tg-theme-hint-color,#999)] mt-0.5">{product.subtitle}</p>
-          <p className="text-[18px] font-bold text-[var(--tg-theme-text-color,#111)] mt-2.5">
+        <div className="px-5 pt-3 pb-32">
+          <div className="flex items-start gap-3.5">
+            <Avatar name={product.name} category={product.category} size="w-14 h-14 text-[20px] mt-0.5" />
+            <div className="flex-1 min-w-0">
+              {product.tier && (
+                <span className="inline-block mb-0.5 text-[11px] font-semibold tracking-wide uppercase text-[var(--tg-theme-link-color,#2481cc)]">
+                  {product.tier}
+                </span>
+              )}
+              <h2 className="text-[19px] font-bold leading-tight text-[var(--tg-theme-text-color,#111)]">
+                {product.name}
+              </h2>
+              <p className="text-[13px] text-[var(--tg-theme-hint-color,#999)] mt-0.5">{product.subtitle}</p>
+            </div>
+          </div>
+          <p className="text-[18px] font-bold text-[var(--tg-theme-text-color,#111)] mt-3">
             {formatPrice(product.price)}
           </p>
           <p className="text-[14px] leading-relaxed text-[var(--tg-theme-text-color,#111)] mt-3">
@@ -317,7 +358,7 @@ function CartSheet({ open, items, onClose, onChangeQty, onRemove }) {
           <div className="divide-y divide-black/5 dark:divide-white/10">
             {items.map(({ product, qty }) => (
               <div key={product.id} className="py-3 flex gap-3 items-center">
-                <ProductImage src={product.image} alt={product.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                <Avatar name={product.name} category={product.category} size="w-12 h-12 text-[16px]" />
                 <div className="flex-1 min-w-0">
                   <p className="text-[13.5px] font-semibold text-[var(--tg-theme-text-color,#111)] truncate">
                     {product.name}
@@ -470,8 +511,9 @@ function App() {
     <div className="min-h-screen pb-28 bg-[var(--tg-theme-bg-color,#fff)]">
       <Header query={query} onQueryChange={setQuery} />
       <CategoryTabs categories={categories} active={category} onChange={setCategory} />
-      <ProductGrid
+      <ProductList
         products={filtered}
+        category={category}
         onOpen={setSelectedProduct}
         onQuickAdd={(p) => addToCart(p, 1)}
       />
